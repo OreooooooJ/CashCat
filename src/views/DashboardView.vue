@@ -1,36 +1,40 @@
 <template>
   <div class="dashboard">
     <div class="grid-layout">
-      <!-- Accounts Overview -->
-      <AccountsOverview :accounts="accounts" class="accounts-overview" />
-
-      <!-- Balance Card -->
+      <AccountsOverview
+        class="accounts-overview"
+        :accounts="accounts"
+      />
+      
       <BalanceCard
+        class="balance-card"
         :total-income="totalIncome"
         :total-expenses="totalExpenses"
-        class="balance-card"
       />
-
-      <!-- Budget Manager -->
+      
       <BudgetManager class="budget-manager" />
-
-      <!-- Spending Breakdown -->
-      <SpendingChart :spending-data="spendingByCategory" class="spending-chart" />
-
-      <!-- Recent Transactions -->
-      <RecentTransactions :transactions="recentTransactions" class="recent-transactions" />
+      
+      <SpendingChart
+        class="spending-chart"
+        :spending-data="spendingByCategory"
+      />
+      
+      <RecentTransactions
+        class="recent-transactions"
+        :transactions="recentTransactions"
+      />
     </div>
 
-    <!-- Floating Action Button -->
-    <button class="fab" aria-label="Add new transaction" @click="openTransactionForm">
-      <PlusIcon class="h-6 w-6" />
+    <!-- Add Transaction FAB -->
+    <button class="fab" @click="openTransactionForm">
+      <PlusIcon class="w-6 h-6" />
     </button>
 
     <!-- Transaction Form Modal -->
     <TransitionRoot appear :show="isModalOpen" as="template">
       <Dialog as="div" class="modal-wrapper" @close="closeTransactionForm">
         <div class="modal-backdrop" aria-hidden="true" />
-
+        
         <div class="modal-container">
           <TransitionChild
             as="template"
@@ -42,8 +46,8 @@
             leave-to="modal-leave-to"
           >
             <DialogPanel class="modal-panel">
-              <DialogTitle as="h3" class="modal-title"> Add Transaction </DialogTitle>
-              <TransactionEntryView @transaction-added="onTransactionAdded" />
+              <DialogTitle as="h3" class="modal-title">Add Transaction</DialogTitle>
+              <TransactionEntryView @save="onTransactionAdded" @close="closeTransactionForm" />
             </DialogPanel>
           </TransitionChild>
         </div>
