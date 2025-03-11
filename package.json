@@ -1,7 +1,7 @@
 {
   "name": "cashcat",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,7 +19,6 @@
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@vee-validate/rules": "^4.15.0",
-    "@vue/tsconfig": "^0.7.0",
     "@vuepic/vue-datepicker": "^11.0.1",
     "chart.js": "^4.4.8",
     "currency.js": "^2.0.4",
@@ -37,6 +36,7 @@
     "@vitejs/plugin-vue": "^5.0.3",
     "@vitest/coverage-v8": "^1.0.0",
     "@vue/test-utils": "^2.4.0",
+    "@vue/tsconfig": "^0.5.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
