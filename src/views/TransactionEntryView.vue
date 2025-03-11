@@ -1,206 +1,182 @@
 <template>
-  <div class="transaction-entry">
-    <h2>Add Transaction</h2>
-    <Form v-slot="{ errors }" class="entry-form" @submit="onSubmit">
-      <div class="form-group" :class="{ 'has-error': errors.amount }">
-        <label for="amount">Amount</label>
-        <Field
+  <form @submit.prevent="onSubmit" class="transaction-form">
+    <div class="form-group">
+      <label for="amount">Amount</label>
+      <div class="amount-input">
+        <span class="currency-symbol">$</span>
+        <input
           id="amount"
-          v-slot="{ field }"
           v-model="amount"
-          name="amount"
           type="text"
-          rules="required|min_value:0"
-        >
-          <input
-            v-bind="field"
-            type="text"
-            :class="{ error: errors.amount }"
-            :value="formattedAmount"
-            @input="formatAmount"
-            @blur="formatAmount"
-          />
-        </Field>
-        <span v-if="errors.amount" class="error-message">{{ errors.amount }}</span>
+          required
+          @input="formatAmount"
+          :class="{ 'has-error': v$.amount.$error }"
+        />
       </div>
+      <span v-if="v$.amount.$error" class="error-message">
+        Please enter a valid amount
+      </span>
+    </div>
 
-      <div class="form-group" :class="{ 'has-error': errors.vendor }">
-        <label for="vendor">Vendor</label>
-        <Field
-          id="vendor"
-          v-slot="{ field, errorMessage }"
-          name="vendor"
-          type="text"
-          rules="required|min:2"
-        >
-          <div class="vendor-input">
-            <input
-              v-bind="field"
-              type="text"
-              :class="{ error: errorMessage }"
-              list="vendor-suggestions"
-              @input="handleVendorInput"
-            />
-            <datalist id="vendor-suggestions">
-              <option v-for="vendor in vendorSuggestions" :key="vendor" :value="vendor" />
-            </datalist>
-          </div>
-        </Field>
-        <span v-if="errors.vendor" class="error-message">{{ errors.vendor }}</span>
-      </div>
+    <div class="form-group">
+      <label for="vendor">Vendor</label>
+      <input
+        id="vendor"
+        v-model="vendor"
+        type="text"
+        required
+        :class="{ 'has-error': v$.vendor.$error }"
+      />
+      <span v-if="v$.vendor.$error" class="error-message">
+        Vendor name is required
+      </span>
+    </div>
 
-      <div class="form-group" :class="{ 'has-error': errors.category }">
-        <label for="category">Category</label>
-        <Field
-          id="category"
-          v-slot="{ field, errorMessage }"
-          name="category"
-          as="select"
-          rules="required"
-        >
-          <select v-bind="field" :class="{ error: errorMessage }">
-            <option value="">Select a category</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </option>
-          </select>
-        </Field>
-        <span v-if="errors.category" class="error-message">{{ errors.category }}</span>
-      </div>
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select
+        id="category"
+        v-model="category"
+        required
+        :class="{ 'has-error': v$.category.$error }"
+      >
+        <option value="">Select a category</option>
+        <option v-for="cat in categories" :key="cat" :value="cat">
+          {{ cat }}
+        </option>
+      </select>
+      <span v-if="v$.category.$error" class="error-message">
+        Please select a category
+      </span>
+    </div>
 
-      <div class="form-group" :class="{ 'has-error': errors.date }">
-        <label for="date">Date</label>
-        <Field v-slot="{ handleChange, errorMessage }" name="date" rules="required">
-          <Datepicker
-            v-model="selectedDate"
-            :enable-time-picker="false"
-            :class="{ error: errorMessage }"
-            auto-apply
-            input-class-name="date-input"
-            @update:model-value="handleChange"
-          />
-        </Field>
-        <span v-if="errors.date" class="error-message">{{ errors.date }}</span>
-      </div>
+    <div class="form-group">
+      <label for="account">Account</label>
+      <select
+        id="account"
+        v-model="accountId"
+        required
+        :class="{ 'has-error': v$.accountId.$error }"
+      >
+        <option value="">Select an account</option>
+        <option v-for="account in accounts" :key="account.id" :value="account.id">
+          {{ account.name }}
+        </option>
+      </select>
+      <span v-if="v$.accountId.$error" class="error-message">
+        Please select an account
+      </span>
+    </div>
 
-      <button type="submit" class="submit-button">Add Transaction</button>
-    </Form>
-  </div>
+    <div class="form-group">
+      <label for="description">Description (Optional)</label>
+      <textarea
+        id="description"
+        v-model="description"
+        rows="3"
+      />
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="cancel-btn" @click="$emit('close')">
+        Cancel
+      </button>
+      <button type="submit" class="submit-btn">
+        Add Transaction
+      </button>
+    </div>
+  </form>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Form, Field } from 'vee-validate'
+import { ref } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, helpers } from '@vuelidate/validators'
 import currency from 'currency.js'
-import Datepicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
+import { getMockData } from '../services/mockData'
+import type { Transaction } from '../types/transaction'
 
-// Types
-interface Category {
-  id: string
-  name: string
-}
+const emit = defineEmits<{
+  (e: 'save', transaction: Transaction): void
+  (e: 'close'): void
+}>()
 
-interface Transaction {
-  id?: string
-  amount: number
-  vendor: string
-  category: string
-  date: Date
-}
-
-// State
+// Form state
 const amount = ref('')
-const formattedAmount = ref('')
-const selectedDate = ref(new Date())
-const vendorSuggestions = ref<string[]>([])
-const recentVendors = ref<string[]>([])
+const vendor = ref('')
+const category = ref('')
+const accountId = ref('')
+const description = ref('')
 
-// Sample categories (replace with your categories management system)
-const categories = ref<Category[]>([
-  { id: 'groceries', name: 'Groceries' },
-  { id: 'utilities', name: 'Utilities' },
-  { id: 'entertainment', name: 'Entertainment' },
-  { id: 'transport', name: 'Transportation' },
-  { id: 'dining', name: 'Dining Out' },
-  { id: 'shopping', name: 'Shopping' },
-  { id: 'health', name: 'Healthcare' },
-  { id: 'other', name: 'Other' },
-])
+// Get accounts for the dropdown
+const { accounts } = getMockData()
 
-// Currency formatting
-const formatAmount = (event?: Event) => {
-  if (event) {
-    const input = (event.target as HTMLInputElement).value.replace(/[^\d.]/g, '')
-    amount.value = input
-  }
+// Available categories
+const categories = [
+  'Income',
+  'Bills & Utilities',
+  'Food & Dining',
+  'Transportation',
+  'Shopping',
+  'Entertainment',
+  'Health & Fitness',
+  'Travel',
+  'Other'
+]
 
-  if (amount.value) {
-    formattedAmount.value = currency(amount.value, {
-      symbol: '$',
-      precision: 2,
-    }).format()
-  }
+// Validation rules
+const rules = {
+  amount: { required, validAmount: helpers.withMessage('Invalid amount', (value: string) => {
+    if (!value) return false
+    const numericValue = currency(value.replace(/[^\d.-]/g, '')).value
+    return !isNaN(numericValue) && numericValue !== 0
+  })},
+  vendor: { required },
+  category: { required },
+  accountId: { required }
 }
 
-// Vendor suggestions
-const handleVendorInput = (event: Event) => {
-  const input = (event.target as HTMLInputElement).value.toLowerCase()
-  if (input.length > 1) {
-    vendorSuggestions.value = recentVendors.value.filter(vendor =>
-      vendor.toLowerCase().includes(input)
-    )
+const v$ = useVuelidate(rules, {
+  amount,
+  vendor,
+  category,
+  accountId
+})
+
+// Format amount as currency
+const formatAmount = (event: Event) => {
+  const input = (event.target as HTMLInputElement).value.replace(/[^\d.-]/g, '')
+  if (input) {
+    amount.value = currency(input, { symbol: '' }).format()
   } else {
-    vendorSuggestions.value = []
+    amount.value = ''
   }
 }
 
 // Form submission
-const onSubmit = (values: any) => {
+const onSubmit = async () => {
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
+  const numericAmount = currency(amount.value).value
+
   const transaction: Transaction = {
-    amount: currency(values.amount).value,
-    vendor: values.vendor,
-    category: values.category,
-    date: selectedDate.value,
+    id: `t${Date.now()}`,
+    amount: numericAmount,
+    vendor: vendor.value,
+    category: category.value,
+    date: new Date(),
+    accountId: accountId.value,
+    description: description.value || undefined,
+    isAutoCategorized: false
   }
 
-  // Store in local state (we'll add Firestore integration later)
-  const transactions = JSON.parse(localStorage.getItem('transactions') || '[]')
-  transactions.push({ ...transaction, id: Date.now().toString() })
-  localStorage.setItem('transactions', JSON.stringify(transactions))
-
-  // Update recent vendors
-  if (!recentVendors.value.includes(values.vendor)) {
-    recentVendors.value.push(values.vendor)
-    localStorage.setItem('recentVendors', JSON.stringify(recentVendors.value))
-  }
-
-  // Reset form
-  amount.value = ''
-  formattedAmount.value = ''
-  selectedDate.value = new Date()
+  emit('save', transaction)
 }
-
-// Load saved vendors on mount
-onMounted(() => {
-  const savedVendors = localStorage.getItem('recentVendors')
-  if (savedVendors) {
-    recentVendors.value = JSON.parse(savedVendors)
-  }
-})
 </script>
 
 <style scoped>
-.transaction-entry {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.entry-form {
+.transaction-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -217,9 +193,21 @@ label {
   color: #374151;
 }
 
-input,
+.amount-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 0.75rem;
+  color: #6b7280;
+}
+
+input[type="text"],
 select,
-.date-input {
+textarea {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
@@ -228,17 +216,19 @@ select,
   transition: border-color 0.2s;
 }
 
-input:focus,
-select:focus,
-.date-input:focus {
-  outline: none;
-  border-color: #1a237e;
-  box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+input[id="amount"] {
+  padding-left: 1.75rem;
 }
 
-.has-error input,
-.has-error select,
-.has-error .date-input {
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.1);
+}
+
+.has-error {
   border-color: #dc2626;
 }
 
@@ -247,41 +237,39 @@ select:focus,
   font-size: 0.875rem;
 }
 
-.submit-button {
-  background: #1a237e;
-  color: white;
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-btn,
+.submit-btn {
   padding: 0.75rem 1.5rem;
-  border: none;
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.submit-button:hover {
-  background: #283593;
+.cancel-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
 }
 
-.submit-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
+.cancel-btn:hover {
+  background: #e5e7eb;
 }
 
-/* Date picker customization */
-:deep(.dp__input) {
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 1rem;
+.submit-btn {
+  background: #14b8a6;
+  border: none;
+  color: white;
 }
 
-:deep(.dp__input:focus) {
-  border-color: #1a237e;
-  box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
-}
-
-:deep(.dp__main) {
-  border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.submit-btn:hover {
+  background: #0d9488;
 }
 </style>

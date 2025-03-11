@@ -5,11 +5,10 @@ export interface Budget {
   spent: number
   period: 'monthly' | 'yearly'
   startDate: Date
-  endDate?: Date
   isRecurring: boolean
-  alerts?: {
-    warning: number // Percentage for warning (e.g., 80%)
-    critical: number // Percentage for critical (e.g., 90%)
+  alerts: {
+    warning: number
+    critical: number
   }
 }
 
