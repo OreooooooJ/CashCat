@@ -16,9 +16,9 @@ describe('Budget Management', () => {
           isRecurring: true,
           alerts: {
             warning: 70,
-            critical: 90
-          }
-        }
+            critical: 90,
+          },
+        },
       ]
 
       const summary = getBudgetSummary(testBudgets)
@@ -29,7 +29,7 @@ describe('Budget Management', () => {
         spent: 800,
         remaining: 200,
         percentageUsed: 80,
-        status: 'warning'
+        status: 'warning',
       })
     })
 
@@ -43,7 +43,7 @@ describe('Budget Management', () => {
           spent: 500,
           period: 'monthly',
           startDate: new Date(),
-          isRecurring: true
+          isRecurring: true,
         },
         {
           // Warning level
@@ -56,8 +56,8 @@ describe('Budget Management', () => {
           isRecurring: true,
           alerts: {
             warning: 80,
-            critical: 90
-          }
+            critical: 90,
+          },
         },
         {
           // Critical level
@@ -70,8 +70,8 @@ describe('Budget Management', () => {
           isRecurring: true,
           alerts: {
             warning: 80,
-            critical: 90
-          }
+            critical: 90,
+          },
         },
         {
           // Over budget
@@ -81,22 +81,22 @@ describe('Budget Management', () => {
           spent: 1100,
           period: 'monthly',
           startDate: new Date(),
-          isRecurring: true
-        }
+          isRecurring: true,
+        },
       ]
 
       const summary = getBudgetSummary(testBudgets)
       expect(summary).toHaveLength(4)
-      
+
       const underBudget = summary.find(b => b.category === 'Under')
       expect(underBudget?.status).toBe('under')
-      
+
       const warningBudget = summary.find(b => b.category === 'Warning')
       expect(warningBudget?.status).toBe('warning')
-      
+
       const criticalBudget = summary.find(b => b.category === 'Critical')
       expect(criticalBudget?.status).toBe('critical')
-      
+
       const overBudget = summary.find(b => b.category === 'Over')
       expect(overBudget?.status).toBe('over')
     })
@@ -119,7 +119,7 @@ describe('Budget Management', () => {
   describe('getMockBudgets', () => {
     it('should return both budgets and summary', () => {
       const result = getMockBudgets()
-      
+
       expect(result).toHaveProperty('budgets')
       expect(result).toHaveProperty('summary')
       expect(Array.isArray(result.budgets)).toBe(true)
@@ -130,7 +130,7 @@ describe('Budget Management', () => {
 
     it('should have valid budget data', () => {
       const { budgets } = getMockBudgets()
-      
+
       budgets.forEach(budget => {
         expect(budget).toMatchObject({
           id: expect.any(String),
@@ -139,16 +139,16 @@ describe('Budget Management', () => {
           spent: expect.any(Number),
           period: expect.stringMatching(/^(monthly|yearly)$/),
           startDate: expect.any(Date),
-          isRecurring: expect.any(Boolean)
+          isRecurring: expect.any(Boolean),
         })
 
         if (budget.alerts) {
           expect(budget.alerts).toMatchObject({
             warning: expect.any(Number),
-            critical: expect.any(Number)
+            critical: expect.any(Number),
           })
         }
       })
     })
   })
-}) 
+})

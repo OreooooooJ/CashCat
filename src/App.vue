@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import ExpenseTracker from './components/ExpenseTracker.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <style scoped>
@@ -37,4 +37,4 @@ main {
   margin: 0 auto;
   padding: 0 1rem;
 }
-</style> 
+</style>

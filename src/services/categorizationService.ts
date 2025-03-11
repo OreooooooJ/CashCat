@@ -1,10 +1,15 @@
-import type { CategorizationRule, CategorySuggestion, VendorSuggestion, AutoCategorizationResult } from '../types/categorization'
+import type {
+  CategorizationRule,
+  CategorySuggestion,
+  VendorSuggestion,
+  AutoCategorizationResult,
+} from '../types/categorization'
 import type { Transaction } from '../types/transaction'
 
 class CategorizationService {
   private rules: CategorizationRule[] = []
   private readonly defaultConfidence = 0.8
-  
+
   constructor() {
     // Load rules from storage
     this.loadRules()
@@ -15,7 +20,7 @@ class CategorizationService {
     if (savedRules) {
       this.rules = JSON.parse(savedRules).map((rule: any) => ({
         ...rule,
-        lastUsed: new Date(rule.lastUsed)
+        lastUsed: new Date(rule.lastUsed),
       }))
     }
   }
@@ -26,9 +31,7 @@ class CategorizationService {
 
   private matchPattern(text: string, pattern: string): boolean {
     // Convert glob-style pattern to regex
-    const regexPattern = pattern
-      .replace(/\*/g, '.*')
-      .replace(/\?/g, '.')
+    const regexPattern = pattern.replace(/\*/g, '.*').replace(/\?/g, '.')
     return new RegExp(regexPattern, 'i').test(text)
   }
 
@@ -72,7 +75,7 @@ class CategorizationService {
       confidence: this.defaultConfidence,
       userDefined: true,
       lastUsed: new Date(),
-      useCount: 1
+      useCount: 1,
     }
 
     this.rules.push(rule)
@@ -86,7 +89,7 @@ class CategorizationService {
       this.rules[index] = {
         ...this.rules[index],
         ...updates,
-        lastUsed: new Date()
+        lastUsed: new Date(),
       }
       this.saveRules()
     }
@@ -103,7 +106,7 @@ class CategorizationService {
         originalDescription: transaction.originalDescription || '',
         vendor: [],
         categories: [],
-        matchedRules: []
+        matchedRules: [],
       }
     }
 
@@ -127,7 +130,7 @@ class CategorizationService {
         vendorMap.set(vendorKey, {
           vendor: rule.vendor,
           confidence: rule.confidence,
-          source: rule.userDefined ? 'user' : 'pattern'
+          source: rule.userDefined ? 'user' : 'pattern',
         })
       }
 
@@ -138,7 +141,7 @@ class CategorizationService {
           category: rule.category,
           subcategory: rule.subcategory,
           confidence: rule.confidence,
-          source: rule.userDefined ? 'user' : 'pattern'
+          source: rule.userDefined ? 'user' : 'pattern',
         })
       }
     })
@@ -149,7 +152,7 @@ class CategorizationService {
       originalDescription: transaction.originalDescription,
       vendor: Array.from(vendorMap.values()),
       categories: Array.from(categoryMap.values()),
-      matchedRules
+      matchedRules,
     }
   }
 
@@ -171,7 +174,7 @@ class CategorizationService {
     // This is a simplified version - you might want to make this smarter
     return description
       .replace(/[0-9]+/g, '*') // Replace numbers with wildcards
-      .replace(/\s+/g, ' ')    // Normalize whitespace
+      .replace(/\s+/g, ' ') // Normalize whitespace
       .trim()
   }
 
@@ -181,4 +184,4 @@ class CategorizationService {
 }
 
 // Create a singleton instance
-export const categorizationService = new CategorizationService() 
+export const categorizationService = new CategorizationService()

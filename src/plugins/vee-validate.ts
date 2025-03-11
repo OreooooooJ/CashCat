@@ -17,5 +17,5 @@ configure({
 export default {
   install: () => {
     // Rules are already defined above
-  }
-} 
+  },
+}

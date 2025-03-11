@@ -4,36 +4,30 @@
       <div class="header-left">
         <h3>Budget Overview</h3>
         <div class="period-toggle">
-          <button 
-            @click="selectedPeriod = 'monthly'"
+          <button
             :class="{ active: selectedPeriod === 'monthly' }"
             class="period-btn"
+            @click="selectedPeriod = 'monthly'"
           >
             Monthly
           </button>
-          <button 
-            @click="selectedPeriod = 'yearly'"
+          <button
             :class="{ active: selectedPeriod === 'yearly' }"
             class="period-btn"
+            @click="selectedPeriod = 'yearly'"
           >
             Yearly
           </button>
         </div>
       </div>
-      <button @click="openBudgetForm" class="add-budget-btn">
-        Set Budget
-      </button>
+      <button class="add-budget-btn" @click="openBudgetForm">Set Budget</button>
     </div>
 
     <div class="budget-list">
       <div v-if="!filteredBudgetSummary.length" class="no-budgets">
         No {{ selectedPeriod }} budgets set. Click "Set Budget" to get started.
       </div>
-      <div
-        v-for="budget in filteredBudgetSummary"
-        :key="budget.category"
-        class="budget-item"
-      >
+      <div v-for="budget in filteredBudgetSummary" :key="budget.category" class="budget-item">
         <div class="budget-header">
           <div class="category-info">
             <span class="category" :style="{ backgroundColor: getBudgetColor(budget.category) }">
@@ -54,26 +48,24 @@
             class="progress-bar"
             :style="{
               width: Math.min(budget.percentageUsed, 100) + '%',
-              backgroundColor: getStatusColor(budget.status)
+              backgroundColor: getStatusColor(budget.status),
             }"
           />
         </div>
 
         <div class="budget-footer">
-          <span class="remaining" :class="{ 'negative': budget.remaining < 0 }">
+          <span class="remaining" :class="{ negative: budget.remaining < 0 }">
             {{ budget.remaining >= 0 ? 'Remaining: ' : 'Over by: ' }}
             {{ formatCurrency(Math.abs(budget.remaining)) }}
           </span>
-          <span class="percentage">
-            {{ budget.percentageUsed.toFixed(1) }}%
-          </span>
+          <span class="percentage"> {{ budget.percentageUsed.toFixed(1) }}% </span>
         </div>
       </div>
     </div>
 
     <!-- Budget Form Modal -->
     <TransitionRoot appear :show="isModalOpen" as="template">
-      <Dialog as="div" @close="closeBudgetForm" class="modal-wrapper">
+      <Dialog as="div" class="modal-wrapper" @close="closeBudgetForm">
         <div class="modal-backdrop" aria-hidden="true" />
 
         <div class="modal-container">
@@ -119,7 +111,7 @@ const selectedPeriod = ref<'monthly' | 'yearly'>('monthly')
 
 const { budgets: mockBudgets } = getMockBudgets()
 
-const filteredBudgetSummary = computed(() => 
+const filteredBudgetSummary = computed(() =>
   budgetSummary.value.filter(budget => {
     const originalBudget = mockBudgets.find(b => b.category === budget.category)
     return originalBudget?.period === selectedPeriod.value
@@ -398,4 +390,4 @@ h3 {
   color: #1f2937;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>

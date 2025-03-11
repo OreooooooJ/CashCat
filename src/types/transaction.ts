@@ -9,4 +9,4 @@ export interface Transaction {
   description?: string
   accountId: string
   isAutoCategorized?: boolean
-} 
+}

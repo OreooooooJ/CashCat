@@ -8,7 +8,7 @@ import type { Expense } from '../../types/expense'
 vi.mock('../firebase/config', () => ({
   db: { type: 'firestore' },
   storage: { type: 'storage' },
-  app: { name: 'test-app' }
+  app: { name: 'test-app' },
 }))
 
 // Mock Firestore
@@ -18,7 +18,7 @@ vi.mock('firebase/firestore', () => {
   const mockOrderBy = vi.fn((field, direction) => ({ type: 'orderBy', field, direction }))
   const mockAddDoc = vi.fn()
   const mockGetDocs = vi.fn()
-  
+
   return {
     collection: mockCollection,
     addDoc: mockAddDoc,
@@ -27,10 +27,10 @@ vi.mock('firebase/firestore', () => {
     orderBy: mockOrderBy,
     Timestamp: {
       fromDate: vi.fn((date: Date) => ({
-        toDate: () => date
-      }))
+        toDate: () => date,
+      })),
     },
-    getFirestore: vi.fn(() => ({ type: 'firestore' }))
+    getFirestore: vi.fn(() => ({ type: 'firestore' })),
   }
 })
 
@@ -39,12 +39,12 @@ vi.mock('firebase/storage', () => {
   const mockRef = vi.fn((storage, path) => ({ type: 'ref', path }))
   const mockUploadBytes = vi.fn()
   const mockGetDownloadURL = vi.fn()
-  
+
   return {
     ref: mockRef,
     uploadBytes: mockUploadBytes,
     getDownloadURL: mockGetDownloadURL,
-    getStorage: vi.fn(() => ({ type: 'storage' }))
+    getStorage: vi.fn(() => ({ type: 'storage' })),
   }
 })
 
@@ -56,10 +56,10 @@ describe('ExpenseService', () => {
   describe('addExpense', () => {
     it('should add expense without receipt', async () => {
       const mockExpense: Expense = {
-        amount: 50.00,
+        amount: 50.0,
         description: 'Test expense',
         category: 'food',
-        date: new Date('2024-03-10')
+        date: new Date('2024-03-10'),
       }
 
       const mockDocRef = { id: 'test-doc-id' }
@@ -71,10 +71,10 @@ describe('ExpenseService', () => {
       expect(addDoc).toHaveBeenCalledWith(
         { type: 'collection', name: 'expenses' },
         expect.objectContaining({
-          amount: 50.00,
+          amount: 50.0,
           description: 'Test expense',
           category: 'food',
-          receipt: null
+          receipt: null,
         })
       )
       expect(result).toBe('test-doc-id')
@@ -82,10 +82,10 @@ describe('ExpenseService', () => {
 
     it('should add expense with receipt', async () => {
       const mockExpense: Expense = {
-        amount: 75.00,
+        amount: 75.0,
         description: 'Test with receipt',
         category: 'food',
-        date: new Date('2024-03-10')
+        date: new Date('2024-03-10'),
       }
 
       const mockFile = new File(['test'], 'receipt.jpg', { type: 'image/jpeg' })
@@ -106,7 +106,7 @@ describe('ExpenseService', () => {
       expect(addDoc).toHaveBeenCalledWith(
         { type: 'collection', name: 'expenses' },
         expect.objectContaining({
-          receipt: mockDownloadURL
+          receipt: mockDownloadURL,
         })
       )
       expect(result).toBe('test-doc-id')
@@ -120,23 +120,23 @@ describe('ExpenseService', () => {
         {
           id: 'expense-1',
           data: () => ({
-            amount: 50.00,
+            amount: 50.0,
             description: 'Test expense 1',
             category: 'food',
             date: { toDate: () => mockDate },
-            receipt: null
-          })
+            receipt: null,
+          }),
         },
         {
           id: 'expense-2',
           data: () => ({
-            amount: 75.00,
+            amount: 75.0,
             description: 'Test expense 2',
             category: 'transport',
             date: { toDate: () => mockDate },
-            receipt: 'https://example.com/receipt.jpg'
-          })
-        }
+            receipt: 'https://example.com/receipt.jpg',
+          }),
+        },
       ]
 
       const mockQuery = { type: 'query', collection: { type: 'collection', name: 'expenses' } }
@@ -152,18 +152,18 @@ describe('ExpenseService', () => {
       expect(result).toHaveLength(2)
       expect(result[0]).toMatchObject({
         id: 'expense-1',
-        amount: 50.00,
+        amount: 50.0,
         description: 'Test expense 1',
         category: 'food',
-        date: mockDate
+        date: mockDate,
       })
       expect(result[1]).toMatchObject({
         id: 'expense-2',
-        amount: 75.00,
+        amount: 75.0,
         description: 'Test expense 2',
         category: 'transport',
         date: mockDate,
-        receipt: 'https://example.com/receipt.jpg'
+        receipt: 'https://example.com/receipt.jpg',
       })
     })
 
@@ -178,4 +178,4 @@ describe('ExpenseService', () => {
       expect(Array.isArray(result)).toBe(true)
     })
   })
-}) 
+})

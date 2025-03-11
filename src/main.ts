@@ -7,4 +7,4 @@ import veeValidatePlugin from './plugins/vee-validate'
 const app = createApp(App)
 app.use(router)
 app.use(veeValidatePlugin)
-app.mount('#app') 
+app.mount('#app')

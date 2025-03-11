@@ -4,7 +4,7 @@
       <h3>Accounts</h3>
       <div class="total-balance">
         <span class="label">Net Worth</span>
-        <span class="amount" :class="{ 'negative': totalBalance < 0 }">
+        <span class="amount" :class="{ negative: totalBalance < 0 }">
           {{ formatCurrency(totalBalance) }}
         </span>
       </div>
@@ -71,15 +71,11 @@ const props = defineProps<{
   accounts: Account[]
 }>()
 
-const debitAccounts = computed(() => 
-  props.accounts.filter(account => account.type === 'debit')
-)
+const debitAccounts = computed(() => props.accounts.filter(account => account.type === 'debit'))
 
-const creditAccounts = computed(() => 
-  props.accounts.filter(account => account.type === 'credit')
-)
+const creditAccounts = computed(() => props.accounts.filter(account => account.type === 'credit'))
 
-const totalBalance = computed(() => 
+const totalBalance = computed(() =>
   props.accounts.reduce((sum, account) => sum + account.balance, 0)
 )
 
@@ -205,4 +201,4 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
-</style> 
+</style>

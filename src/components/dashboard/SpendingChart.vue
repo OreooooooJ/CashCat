@@ -7,9 +7,7 @@
         :data="chartData"
         :options="chartOptions"
       />
-      <div v-else class="no-data">
-        No spending data available
-      </div>
+      <div v-else class="no-data">No spending data available</div>
     </div>
   </div>
 </template>
@@ -17,14 +15,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Doughnut } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  CategoryScale,
-} from 'chart.js'
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js'
 import currency from 'currency.js'
 
 // Register ChartJS components
@@ -55,11 +46,13 @@ const chartColors = [
 // Computed chart data
 const chartData = computed(() => ({
   labels: props.spendingData.map(item => item.category),
-  datasets: [{
-    data: props.spendingData.map(item => item.amount),
-    backgroundColor: chartColors.slice(0, props.spendingData.length),
-    borderWidth: 0,
-  }]
+  datasets: [
+    {
+      data: props.spendingData.map(item => item.amount),
+      backgroundColor: chartColors.slice(0, props.spendingData.length),
+      borderWidth: 0,
+    },
+  ],
 }))
 
 // Chart options
@@ -115,4 +108,4 @@ h3 {
   color: #6b7280;
   font-size: 0.875rem;
 }
-</style> 
+</style>

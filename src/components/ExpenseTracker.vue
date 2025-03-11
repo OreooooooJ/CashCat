@@ -1,28 +1,17 @@
 <template>
   <div class="expense-tracker">
     <h2>Track Your Expenses</h2>
-    
+
     <!-- Add Expense Form -->
-    <form @submit.prevent="handleSubmit" class="expense-form">
+    <form class="expense-form" @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="amount">Amount</label>
-        <input
-          id="amount"
-          v-model.number="form.amount"
-          type="number"
-          step="0.01"
-          required
-        />
+        <input id="amount" v-model.number="form.amount" type="number" step="0.01" required />
       </div>
 
       <div class="form-group">
         <label for="description">Description</label>
-        <input
-          id="description"
-          v-model="form.description"
-          type="text"
-          required
-        />
+        <input id="description" v-model="form.description" type="text" required />
       </div>
 
       <div class="form-group">
@@ -38,12 +27,7 @@
 
       <div class="form-group">
         <label for="receipt">Receipt (optional)</label>
-        <input
-          id="receipt"
-          type="file"
-          accept="image/*"
-          @change="handleFileChange"
-        />
+        <input id="receipt" type="file" accept="image/*" @change="handleFileChange" />
       </div>
 
       <button type="submit" :disabled="loading">Add Expense</button>
@@ -62,12 +46,7 @@
             <span class="category">{{ expense.category }}</span>
             <span class="date">{{ formatDate(expense.date) }}</span>
           </div>
-          <a
-            v-if="expense.receipt"
-            :href="expense.receipt"
-            target="_blank"
-            class="receipt-link"
-          >
+          <a v-if="expense.receipt" :href="expense.receipt" target="_blank" class="receipt-link">
             View Receipt
           </a>
         </li>
@@ -104,9 +83,9 @@ const handleSubmit = async () => {
       ...form.value,
       date: new Date(),
     }
-    
+
     await expenseService.addExpense(expense, receiptFile.value || undefined)
-    
+
     // Reset form
     form.value = {
       amount: 0,
@@ -114,7 +93,7 @@ const handleSubmit = async () => {
       category: 'other',
     }
     receiptFile.value = null
-    
+
     // Refresh expenses list
     await loadExpenses()
   } catch (error) {
@@ -249,4 +228,4 @@ button:disabled {
   color: #6b7280;
   font-size: 0.875rem;
 }
-</style> 
+</style>

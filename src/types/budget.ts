@@ -8,7 +8,7 @@ export interface Budget {
   endDate?: Date
   isRecurring: boolean
   alerts?: {
-    warning: number  // Percentage for warning (e.g., 80%)
+    warning: number // Percentage for warning (e.g., 80%)
     critical: number // Percentage for critical (e.g., 90%)
   }
 }
@@ -20,4 +20,4 @@ export interface BudgetSummary {
   remaining: number
   percentageUsed: number
   status: 'under' | 'warning' | 'critical' | 'over'
-} 
+}

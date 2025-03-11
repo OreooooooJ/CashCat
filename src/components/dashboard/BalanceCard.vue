@@ -14,7 +14,7 @@
       </div>
       <div class="balance-item net">
         <span class="label">Net Balance</span>
-        <span class="amount" :class="{ 'negative': netBalance < 0 }">
+        <span class="amount" :class="{ negative: netBalance < 0 }">
           {{ formatCurrency(netBalance) }}
         </span>
       </div>
@@ -115,4 +115,4 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
-</style> 
+</style>

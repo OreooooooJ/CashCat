@@ -1,16 +1,16 @@
 <template>
   <div class="budget-form">
-    <Form @submit="onSubmit" v-slot="{ errors }" class="form">
+    <Form v-slot="{ errors }" class="form" @submit="onSubmit">
       <div class="form-group" :class="{ 'has-error': errors.category }">
         <label for="category">Category</label>
         <Field
+          id="category"
+          v-slot="{ field, errorMessage }"
           name="category"
           as="select"
-          id="category"
           rules="required"
-          v-slot="{ field, errorMessage }"
         >
-          <select v-bind="field" :class="{ 'error': errorMessage }">
+          <select v-bind="field" :class="{ error: errorMessage }">
             <option value="">Select a category</option>
             <option
               v-for="category in Object.keys(categoryColors)"
@@ -21,58 +21,51 @@
             </option>
           </select>
         </Field>
-        <span class="error-message" v-if="errors.category">{{ errors.category }}</span>
+        <span v-if="errors.category" class="error-message">{{ errors.category }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.amount }">
         <label for="amount">Budget Amount</label>
         <Field
+          id="amount"
+          v-slot="{ field }"
           name="amount"
           type="text"
-          id="amount"
           rules="required|min_value:0"
-          v-slot="{ field }"
         >
           <input
             v-bind="field"
             type="text"
-            :class="{ 'error': errors.amount }"
+            :class="{ error: errors.amount }"
+            :value="formattedAmount"
             @input="formatAmount"
             @blur="formatAmount"
-            :value="formattedAmount"
           />
         </Field>
-        <span class="error-message" v-if="errors.amount">{{ errors.amount }}</span>
+        <span v-if="errors.amount" class="error-message">{{ errors.amount }}</span>
       </div>
 
       <div class="form-group">
         <label for="period">Budget Period</label>
         <Field
+          id="period"
+          v-slot="{ field, errorMessage }"
           name="period"
           as="select"
-          id="period"
           rules="required"
-          v-slot="{ field, errorMessage }"
         >
-          <select v-bind="field" :class="{ 'error': errorMessage }">
+          <select v-bind="field" :class="{ error: errorMessage }">
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
           </select>
         </Field>
-        <span class="error-message" v-if="errors.period">{{ errors.period }}</span>
+        <span v-if="errors.period" class="error-message">{{ errors.period }}</span>
       </div>
 
       <div class="form-group">
         <label class="checkbox-label">
-          <Field
-            name="isRecurring"
-            type="checkbox"
-            v-slot="{ field }"
-          >
-            <input
-              type="checkbox"
-              v-bind="field"
-            />
+          <Field v-slot="{ field }" name="isRecurring" type="checkbox">
+            <input type="checkbox" v-bind="field" />
           </Field>
           Recurring budget
         </label>
@@ -84,11 +77,11 @@
           <div class="alert-input">
             <label for="warning">Warning at</label>
             <Field
+              id="warning"
+              v-slot="{ field, errorMessage }"
               name="warning"
               type="number"
-              id="warning"
               rules="required|min_value:1|max_value:100"
-              v-slot="{ field, errorMessage }"
             >
               <div class="percentage-input">
                 <input
@@ -96,7 +89,7 @@
                   type="number"
                   min="1"
                   max="100"
-                  :class="{ 'error': errorMessage }"
+                  :class="{ error: errorMessage }"
                 />
                 <span class="percentage-symbol">%</span>
               </div>
@@ -106,11 +99,11 @@
           <div class="alert-input">
             <label for="critical">Critical at</label>
             <Field
+              id="critical"
+              v-slot="{ field, errorMessage }"
               name="critical"
               type="number"
-              id="critical"
               rules="required|min_value:1|max_value:100"
-              v-slot="{ field, errorMessage }"
             >
               <div class="percentage-input">
                 <input
@@ -118,7 +111,7 @@
                   type="number"
                   min="1"
                   max="100"
-                  :class="{ 'error': errorMessage }"
+                  :class="{ error: errorMessage }"
                 />
                 <span class="percentage-symbol">%</span>
               </div>
@@ -128,9 +121,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="cancel-btn" @click="$emit('close')">
-          Cancel
-        </button>
+        <button type="button" class="cancel-btn" @click="$emit('close')">Cancel</button>
         <button type="submit" class="submit-btn">
           {{ editMode ? 'Update Budget' : 'Set Budget' }}
         </button>
@@ -164,7 +155,7 @@ const formatAmount = (event?: Event) => {
     const input = (event.target as HTMLInputElement).value.replace(/[^\d.]/g, '')
     amount.value = input
   }
-  
+
   if (amount.value) {
     formattedAmount.value = currency(amount.value, {
       symbol: '$',
@@ -184,10 +175,10 @@ const onSubmit = (values: any) => {
     isRecurring: values.isRecurring,
     alerts: {
       warning: Number(values.warning),
-      critical: Number(values.critical)
-    }
+      critical: Number(values.critical),
+    },
   }
-  
+
   emit('save', budget)
 }
 </script>
@@ -248,7 +239,7 @@ select:focus {
   cursor: pointer;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-label input[type='checkbox'] {
   width: auto;
   margin: 0;
 }
@@ -322,4 +313,4 @@ select:focus {
 .submit-btn:hover {
   background: #283593;
 }
-</style> 
+</style>

@@ -5,95 +5,95 @@ const mockBudgets: Budget[] = [
   {
     id: 'b1',
     category: 'Food & Dining',
-    amount: 800.00,
+    amount: 800.0,
     spent: 390.64,
     period: 'monthly',
     startDate: new Date('2024-03-01'),
     isRecurring: true,
     alerts: {
       warning: 80,
-      critical: 90
-    }
+      critical: 90,
+    },
   },
   {
     id: 'b2',
     category: 'Transportation',
-    amount: 300.00,
+    amount: 300.0,
     spent: 190.43,
     period: 'monthly',
     startDate: new Date('2024-03-01'),
     isRecurring: true,
     alerts: {
       warning: 80,
-      critical: 90
-    }
+      critical: 90,
+    },
   },
   {
     id: 'b3',
     category: 'Bills & Utilities',
-    amount: 500.00,
+    amount: 500.0,
     spent: 235.31,
     period: 'monthly',
     startDate: new Date('2024-03-01'),
     isRecurring: true,
     alerts: {
       warning: 80,
-      critical: 90
-    }
+      critical: 90,
+    },
   },
   {
     id: 'b4',
     category: 'Shopping',
-    amount: 400.00,
+    amount: 400.0,
     spent: 269.98,
     period: 'monthly',
     startDate: new Date('2024-03-01'),
     isRecurring: true,
     alerts: {
       warning: 80,
-      critical: 90
-    }
+      critical: 90,
+    },
   },
   // Yearly Budgets
   {
     id: 'b5',
     category: 'Healthcare',
-    amount: 6000.00,
+    amount: 6000.0,
     spent: 2150.75,
     period: 'yearly',
     startDate: new Date('2024-01-01'),
     isRecurring: true,
     alerts: {
       warning: 75,
-      critical: 90
-    }
+      critical: 90,
+    },
   },
   {
     id: 'b6',
     category: 'Entertainment',
-    amount: 3600.00,
+    amount: 3600.0,
     spent: 890.45,
     period: 'yearly',
     startDate: new Date('2024-01-01'),
     isRecurring: true,
     alerts: {
       warning: 80,
-      critical: 90
-    }
+      critical: 90,
+    },
   },
   {
     id: 'b7',
     category: 'Education',
-    amount: 5000.00,
-    spent: 1200.00,
+    amount: 5000.0,
+    spent: 1200.0,
     period: 'yearly',
     startDate: new Date('2024-01-01'),
     isRecurring: true,
     alerts: {
       warning: 70,
-      critical: 85
-    }
-  }
+      critical: 85,
+    },
+  },
 ]
 
 export const getBudgetSummary = (budgets: Budget[]): BudgetSummary[] => {
@@ -115,7 +115,7 @@ export const getBudgetSummary = (budgets: Budget[]): BudgetSummary[] => {
       spent: budget.spent,
       remaining: budget.amount - budget.spent,
       percentageUsed,
-      status
+      status,
     }
   })
 }
@@ -123,7 +123,7 @@ export const getBudgetSummary = (budgets: Budget[]): BudgetSummary[] => {
 export const getMockBudgets = () => {
   return {
     budgets: mockBudgets,
-    summary: getBudgetSummary(mockBudgets)
+    summary: getBudgetSummary(mockBudgets),
   }
 }
 
@@ -144,4 +144,4 @@ export const getStatusColor = (status: BudgetSummary['status']): string => {
 
 export const getBudgetColor = (category: string): string => {
   return categoryColors[category as keyof typeof categoryColors] || categoryColors.Other
-} 
+}

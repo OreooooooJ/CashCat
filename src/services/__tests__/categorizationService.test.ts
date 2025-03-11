@@ -6,43 +6,29 @@ describe('CategorizationService', () => {
   beforeEach(() => {
     localStorage.clear()
     // Add some test rules
-    categorizationService.addRule(
-      'WALMART',
-      'Walmart',
-      'Shopping',
-      'Retail',
-      'test-account'
-    )
-    categorizationService.addRule(
-      'STARBUCKS',
-      'Starbucks',
-      'Food & Dining',
-      'Coffee Shops'
-    )
+    categorizationService.addRule('WALMART', 'Walmart', 'Shopping', 'Retail', 'test-account')
+    categorizationService.addRule('STARBUCKS', 'Starbucks', 'Food & Dining', 'Coffee Shops')
   })
 
   describe('addRule', () => {
     it('should add a new categorization rule', () => {
-      const rule = categorizationService.addRule(
-        'TARGET',
-        'Target',
-        'Shopping',
-        'Retail'
-      )
-      
+      const rule = categorizationService.addRule('TARGET', 'Target', 'Shopping', 'Retail')
+
       expect(rule).toMatchObject({
         pattern: 'TARGET',
         vendor: 'Target',
         category: 'Shopping',
         subcategory: 'Retail',
-        userDefined: true
+        userDefined: true,
       })
-      
+
       const rules = categorizationService.getRules()
-      expect(rules).toContainEqual(expect.objectContaining({
-        pattern: 'TARGET',
-        vendor: 'Target'
-      }))
+      expect(rules).toContainEqual(
+        expect.objectContaining({
+          pattern: 'TARGET',
+          vendor: 'Target',
+        })
+      )
     })
   })
 
@@ -53,7 +39,7 @@ describe('CategorizationService', () => {
         date: new Date(),
         vendor: 'Unknown',
         category: 'Uncategorized',
-        accountId: 'test-account'
+        accountId: 'test-account',
       })
 
       expect(result.vendor).toHaveLength(0)
@@ -64,23 +50,23 @@ describe('CategorizationService', () => {
     it('should match transaction with existing rule', () => {
       const result = categorizationService.categorizeTransaction({
         originalDescription: 'WALMART STORE #123',
-        amount: 50.00,
+        amount: 50.0,
         date: new Date(),
         vendor: 'Unknown',
         category: 'Uncategorized',
-        accountId: 'test-account'
+        accountId: 'test-account',
       })
 
       expect(result.vendor).toContainEqual(
         expect.objectContaining({
           vendor: 'Walmart',
-          source: 'user'
+          source: 'user',
         })
       )
       expect(result.categories).toContainEqual(
         expect.objectContaining({
           category: 'Shopping',
-          subcategory: 'Retail'
+          subcategory: 'Retail',
         })
       )
     })
@@ -88,17 +74,17 @@ describe('CategorizationService', () => {
     it('should consider account ID when matching rules', () => {
       const result = categorizationService.categorizeTransaction({
         originalDescription: 'WALMART STORE #123',
-        amount: 50.00,
+        amount: 50.0,
         date: new Date(),
         vendor: 'Unknown',
         category: 'Uncategorized',
-        accountId: 'different-account'
+        accountId: 'different-account',
       })
 
       // Should not match the rule with specific account
       expect(result.matchedRules).not.toContainEqual(
         expect.objectContaining({
-          source: 'test-account'
+          source: 'test-account',
         })
       )
     })
@@ -114,17 +100,17 @@ describe('CategorizationService', () => {
         vendor: 'Chipotle',
         category: 'Food & Dining',
         subcategory: 'Restaurants',
-        accountId: 'test-account'
+        accountId: 'test-account',
       }
 
       categorizationService.learnFromTransaction(transaction)
-      
+
       const rules = categorizationService.getRules()
       expect(rules).toContainEqual(
         expect.objectContaining({
           vendor: 'Chipotle',
           category: 'Food & Dining',
-          subcategory: 'Restaurants'
+          subcategory: 'Restaurants',
         })
       )
     })
@@ -132,17 +118,17 @@ describe('CategorizationService', () => {
     it('should not create rule from transaction without description', () => {
       const transaction: Transaction = {
         id: 'test-2',
-        amount: 25.00,
+        amount: 25.0,
         date: new Date(),
         vendor: 'Unknown',
         category: 'Uncategorized',
-        accountId: 'test-account'
+        accountId: 'test-account',
       }
 
       const initialRulesCount = categorizationService.getRules().length
       categorizationService.learnFromTransaction(transaction)
-      
+
       expect(categorizationService.getRules()).toHaveLength(initialRulesCount)
     })
   })
-}) 
+})

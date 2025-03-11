@@ -2,14 +2,8 @@
   <div class="recent-transactions">
     <h3>Recent Transactions</h3>
     <div class="transactions-list">
-      <div v-if="!transactions.length" class="no-transactions">
-        No transactions yet
-      </div>
-      <div
-        v-for="transaction in transactions"
-        :key="transaction.id"
-        class="transaction-item"
-      >
+      <div v-if="!transactions.length" class="no-transactions">No transactions yet</div>
+      <div v-for="transaction in transactions" :key="transaction.id" class="transaction-item">
         <div class="transaction-info">
           <div class="primary-info">
             <div class="vendor-info">
@@ -18,16 +12,16 @@
                 {{ transaction.originalDescription }}
               </span>
             </div>
-            <span
-              class="amount"
-              :class="{ 'negative': transaction.amount < 0 }"
-            >
+            <span class="amount" :class="{ negative: transaction.amount < 0 }">
               {{ formatCurrency(transaction.amount) }}
             </span>
           </div>
           <div class="secondary-info">
             <div class="category-info">
-              <span class="category" :style="{ backgroundColor: getCategoryColor(transaction.category) }">
+              <span
+                class="category"
+                :style="{ backgroundColor: getCategoryColor(transaction.category) }"
+              >
                 {{ transaction.category }}
               </span>
               <span v-if="transaction.subcategory" class="subcategory">
@@ -194,4 +188,4 @@ h3 {
   border-radius: 6px;
   font-size: 0.875rem;
 }
-</style> 
+</style>

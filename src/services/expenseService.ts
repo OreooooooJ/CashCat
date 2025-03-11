@@ -37,7 +37,7 @@ export const expenseService = {
   async getExpenses(): Promise<Expense[]> {
     const q = query(collection(db, COLLECTION_NAME), orderBy('date', 'desc'))
     const querySnapshot = await getDocs(q)
-    
+
     return querySnapshot.docs.map(doc => {
       const data = doc.data() as DocumentData
       return {
@@ -47,4 +47,4 @@ export const expenseService = {
       } as Expense
     })
   },
-} 
+}

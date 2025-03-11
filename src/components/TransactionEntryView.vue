@@ -1,25 +1,25 @@
 <template>
   <div class="transaction-entry">
     <h2>Add Transaction</h2>
-    <Form @submit="onSubmit" v-slot="{ errors }" class="entry-form">
+    <Form v-slot="{ errors }" class="entry-form" @submit="onSubmit">
       <div class="form-group" :class="{ 'has-error': errors.description }">
         <label for="description">Description</label>
         <Field
+          id="description"
+          v-slot="{ field, errorMessage }"
           name="description"
           type="text"
-          id="description"
           rules="required|min:2"
-          v-slot="{ field, errorMessage }"
         >
           <input
             v-bind="field"
             type="text"
-            :class="{ 'error': errorMessage }"
+            :class="{ error: errorMessage }"
             @input="handleDescriptionInput"
           />
         </Field>
-        <span class="error-message" v-if="errors.description">{{ errors.description }}</span>
-        
+        <span v-if="errors.description" class="error-message">{{ errors.description }}</span>
+
         <!-- Auto-categorization suggestions -->
         <div v-if="autoCategorization" class="suggestions">
           <div v-if="autoCategorization.vendor.length > 0" class="suggestion-group">
@@ -37,7 +37,7 @@
               </button>
             </div>
           </div>
-          
+
           <div v-if="autoCategorization.categories.length > 0" class="suggestion-group">
             <span class="suggestion-label">Category:</span>
             <div class="suggestion-items">
@@ -62,81 +62,63 @@
       <div class="form-group" :class="{ 'has-error': errors.amount }">
         <label for="amount">Amount</label>
         <Field
+          id="amount"
+          v-slot="{ field, errorMessage }"
           name="amount"
           type="text"
-          id="amount"
           rules="required|min_value:0"
-          v-slot="{ field, errorMessage }"
         >
           <input
             v-bind="field"
+            v-model="amount"
             type="text"
-            :class="{ 'error': errorMessage }"
+            :class="{ error: errorMessage }"
             @input="formatAmount"
             @blur="formatAmount"
-            v-model="amount"
           />
         </Field>
-        <span class="error-message" v-if="errors.amount">{{ errors.amount }}</span>
+        <span v-if="errors.amount" class="error-message">{{ errors.amount }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.vendor }">
         <label for="vendor">Vendor</label>
         <Field
+          id="vendor"
+          v-slot="{ field, errorMessage }"
           name="vendor"
           type="text"
-          id="vendor"
           rules="required|min:2"
-          v-slot="{ field, errorMessage }"
         >
-          <input
-            v-bind="field"
-            type="text"
-            :class="{ 'error': errorMessage }"
-            v-model="vendor"
-          />
+          <input v-bind="field" v-model="vendor" type="text" :class="{ error: errorMessage }" />
         </Field>
-        <span class="error-message" v-if="errors.vendor">{{ errors.vendor }}</span>
+        <span v-if="errors.vendor" class="error-message">{{ errors.vendor }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.category }">
         <label for="category">Category</label>
         <Field
+          id="category"
+          v-slot="{ field, errorMessage }"
           name="category"
           as="select"
-          id="category"
           rules="required"
-          v-slot="{ field, errorMessage }"
         >
-          <select v-bind="field" v-model="category" :class="{ 'error': errorMessage }">
+          <select v-bind="field" v-model="category" :class="{ error: errorMessage }">
             <option value="">Select a category</option>
-            <option
-              v-for="cat in Object.keys(categoryColors)"
-              :key="cat"
-              :value="cat"
-            >
+            <option v-for="cat in Object.keys(categoryColors)" :key="cat" :value="cat">
               {{ cat }}
             </option>
           </select>
         </Field>
-        <span class="error-message" v-if="errors.category">{{ errors.category }}</span>
+        <span v-if="errors.category" class="error-message">{{ errors.category }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.subcategory }">
         <label for="subcategory">Subcategory</label>
-        <Field
-          name="subcategory"
-          as="select"
-          id="subcategory"
-          v-slot="{ field, errorMessage }"
-        >
-          <select v-bind="field" v-model="subcategory" :class="{ 'error': errorMessage }">
+        <Field id="subcategory" v-slot="{ field, errorMessage }" name="subcategory" as="select">
+          <select v-bind="field" v-model="subcategory" :class="{ error: errorMessage }">
             <option value="">Select a subcategory</option>
-            <option
-              v-for="sub in getSubcategories"
-              :key="sub"
-              :value="sub"
-            >
+            <option v-for="sub in getSubcategories" :key="sub" :value="sub">
               {{ sub }}
             </option>
           </select>
@@ -145,17 +127,17 @@
 
       <div class="form-group" :class="{ 'has-error': errors.date }">
         <label for="date">Date</label>
-        <Field name="date" rules="required" v-slot="{ handleChange, errorMessage }">
+        <Field v-slot="{ handleChange, errorMessage }" name="date" rules="required">
           <Datepicker
             v-model="selectedDate"
-            @update:modelValue="handleChange"
             :enable-time-picker="false"
-            :class="{ 'error': errorMessage }"
+            :class="{ error: errorMessage }"
             auto-apply
             input-class-name="date-input"
+            @update:model-value="handleChange"
           />
         </Field>
-        <span class="error-message" v-if="errors.date">{{ errors.date }}</span>
+        <span v-if="errors.date" class="error-message">{{ errors.date }}</span>
       </div>
 
       <button type="submit" class="submit-button" :disabled="loading">
@@ -206,7 +188,7 @@ const formatAmount = (event?: Event) => {
     const input = (event.target as HTMLInputElement).value.replace(/[^\d.]/g, '')
     amount.value = input
   }
-  
+
   if (amount.value) {
     formattedAmount.value = currency(amount.value, {
       symbol: '$',
@@ -220,20 +202,20 @@ const handleDescriptionInput = (event: Event) => {
   if (input.length > 2) {
     // Get categorization suggestions
     const result = categorizationService.categorizeTransaction({
-      originalDescription: input
+      originalDescription: input,
     })
-    
+
     if (result.vendor.length > 0 || result.categories.length > 0) {
       autoCategorization.value = result
-      
+
       // Auto-fill if we have high-confidence matches
       const bestVendor = result.vendor.find(v => v.confidence > 0.8)
       const bestCategory = result.categories.find(c => c.confidence > 0.8)
-      
+
       if (bestVendor) {
         vendor.value = bestVendor.vendor
       }
-      
+
       if (bestCategory) {
         category.value = bestCategory.category
         if (bestCategory.subcategory) {
@@ -278,14 +260,14 @@ const onSubmit = async (values: any) => {
       date: selectedDate.value,
       originalDescription: values.description,
       isAutoCategorized: autoCategorization.value !== null,
-      accountId: props.defaultAccountId || 'default'
+      accountId: props.defaultAccountId || 'default',
     }
-    
+
     // Learn from this categorization if it wasn't auto-categorized
     if (!transaction.isAutoCategorized && transaction.originalDescription) {
       categorizationService.learnFromTransaction(transaction)
     }
-    
+
     // Reset form
     resetForm()
     emit('transaction-added', transaction)
@@ -446,4 +428,4 @@ select:focus,
   border-radius: 6px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>

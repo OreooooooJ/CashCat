@@ -1,12 +1,18 @@
 import { describe, it, expect } from 'vitest'
-import { getMockData, categoryColors, subcategoryIcons, vendorPatterns, type Account } from '../mockData'
+import {
+  getMockData,
+  categoryColors,
+  subcategoryIcons,
+  vendorPatterns,
+  type Account,
+} from '../mockData'
 import type { Transaction } from '../../types/transaction'
 
 describe('MockData Service', () => {
   describe('getMockData', () => {
     it('should return accounts and transactions', () => {
       const { accounts, transactions } = getMockData()
-      
+
       expect(Array.isArray(accounts)).toBe(true)
       expect(Array.isArray(transactions)).toBe(true)
       expect(accounts.length).toBeGreaterThan(0)
@@ -15,7 +21,7 @@ describe('MockData Service', () => {
 
     it('should have valid account data', () => {
       const { accounts } = getMockData()
-      
+
       accounts.forEach((account: Account) => {
         expect(account).toMatchObject({
           id: expect.any(String),
@@ -24,14 +30,14 @@ describe('MockData Service', () => {
           institution: expect.any(String),
           lastFour: expect.any(String),
           balance: expect.any(Number),
-          color: expect.stringMatching(/^#[0-9A-F]{6}$/i)
+          color: expect.stringMatching(/^#[0-9A-F]{6}$/i),
         })
       })
     })
 
     it('should have valid transaction data', () => {
       const { transactions } = getMockData()
-      
+
       transactions.forEach((transaction: Transaction) => {
         expect(transaction).toMatchObject({
           id: expect.any(String),
@@ -39,7 +45,7 @@ describe('MockData Service', () => {
           vendor: expect.any(String),
           category: expect.any(String),
           date: expect.any(Date),
-          accountId: expect.any(String)
+          accountId: expect.any(String),
         })
 
         // Optional fields should be of correct type if present
@@ -61,7 +67,7 @@ describe('MockData Service', () => {
     it('should have transactions linked to valid accounts', () => {
       const { accounts, transactions } = getMockData()
       const accountIds = accounts.map(a => a.id)
-      
+
       transactions.forEach(transaction => {
         expect(accountIds).toContain(transaction.accountId)
       })
@@ -86,7 +92,7 @@ describe('MockData Service', () => {
         'Healthcare',
         'Education',
         'Transfer',
-        'Other'
+        'Other',
       ]
 
       requiredCategories.forEach(category => {
@@ -111,7 +117,7 @@ describe('MockData Service', () => {
         'Utilities',
         'Streaming Services',
         'Gas & Fuel',
-        'Public Transit'
+        'Public Transit',
       ]
 
       commonSubcategories.forEach(subcategory => {
@@ -126,7 +132,7 @@ describe('MockData Service', () => {
         expect(pattern).toMatchObject({
           pattern: expect.any(String),
           vendor: expect.any(String),
-          category: expect.any(String)
+          category: expect.any(String),
         })
 
         if (pattern.subcategory) {
@@ -144,4 +150,4 @@ describe('MockData Service', () => {
       })
     })
   })
-}) 
+})

@@ -8,7 +8,7 @@
   "extends": [
     "plugin:vue/vue3-recommended",
     "eslint:recommended",
-    "@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
   "parser": "vue-eslint-parser",
@@ -22,6 +22,8 @@
     "prettier/prettier": "error",
     "vue/multi-word-component-names": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "warn"
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "no-misleading-character-class": "warn"
   }
 } 

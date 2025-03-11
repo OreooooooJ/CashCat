@@ -1,86 +1,86 @@
 <template>
   <div class="transaction-entry">
     <h2>Add Transaction</h2>
-    <Form @submit="onSubmit" v-slot="{ errors }" class="entry-form">
+    <Form v-slot="{ errors }" class="entry-form" @submit="onSubmit">
       <div class="form-group" :class="{ 'has-error': errors.amount }">
         <label for="amount">Amount</label>
         <Field
+          id="amount"
+          v-slot="{ field }"
+          v-model="amount"
           name="amount"
           type="text"
-          id="amount"
-          v-model="amount"
           rules="required|min_value:0"
-          v-slot="{ field }"
         >
           <input
             v-bind="field"
             type="text"
-            :class="{ 'error': errors.amount }"
+            :class="{ error: errors.amount }"
+            :value="formattedAmount"
             @input="formatAmount"
             @blur="formatAmount"
-            :value="formattedAmount"
           />
         </Field>
-        <span class="error-message" v-if="errors.amount">{{ errors.amount }}</span>
+        <span v-if="errors.amount" class="error-message">{{ errors.amount }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.vendor }">
         <label for="vendor">Vendor</label>
         <Field
+          id="vendor"
+          v-slot="{ field, errorMessage }"
           name="vendor"
           type="text"
-          id="vendor"
           rules="required|min:2"
-          v-slot="{ field, errorMessage }"
         >
           <div class="vendor-input">
             <input
               v-bind="field"
               type="text"
-              :class="{ 'error': errorMessage }"
-              @input="handleVendorInput"
+              :class="{ error: errorMessage }"
               list="vendor-suggestions"
+              @input="handleVendorInput"
             />
             <datalist id="vendor-suggestions">
               <option v-for="vendor in vendorSuggestions" :key="vendor" :value="vendor" />
             </datalist>
           </div>
         </Field>
-        <span class="error-message" v-if="errors.vendor">{{ errors.vendor }}</span>
+        <span v-if="errors.vendor" class="error-message">{{ errors.vendor }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.category }">
         <label for="category">Category</label>
         <Field
+          id="category"
+          v-slot="{ field, errorMessage }"
           name="category"
           as="select"
-          id="category"
           rules="required"
-          v-slot="{ field, errorMessage }"
         >
-          <select v-bind="field" :class="{ 'error': errorMessage }">
+          <select v-bind="field" :class="{ error: errorMessage }">
             <option value="">Select a category</option>
             <option v-for="category in categories" :key="category.id" :value="category.id">
               {{ category.name }}
             </option>
           </select>
         </Field>
-        <span class="error-message" v-if="errors.category">{{ errors.category }}</span>
+        <span v-if="errors.category" class="error-message">{{ errors.category }}</span>
       </div>
 
       <div class="form-group" :class="{ 'has-error': errors.date }">
         <label for="date">Date</label>
-        <Field name="date" rules="required" v-slot="{ handleChange, errorMessage }">
+        <Field v-slot="{ handleChange, errorMessage }" name="date" rules="required">
           <Datepicker
             v-model="selectedDate"
-            @update:modelValue="handleChange"
             :enable-time-picker="false"
-            :class="{ 'error': errorMessage }"
+            :class="{ error: errorMessage }"
             auto-apply
             input-class-name="date-input"
+            @update:model-value="handleChange"
           />
         </Field>
-        <span class="error-message" v-if="errors.date">{{ errors.date }}</span>
+        <span v-if="errors.date" class="error-message">{{ errors.date }}</span>
       </div>
 
       <button type="submit" class="submit-button">Add Transaction</button>
@@ -134,7 +134,7 @@ const formatAmount = (event?: Event) => {
     const input = (event.target as HTMLInputElement).value.replace(/[^\d.]/g, '')
     amount.value = input
   }
-  
+
   if (amount.value) {
     formattedAmount.value = currency(amount.value, {
       symbol: '$',
@@ -163,18 +163,18 @@ const onSubmit = (values: any) => {
     category: values.category,
     date: selectedDate.value,
   }
-  
+
   // Store in local state (we'll add Firestore integration later)
   const transactions = JSON.parse(localStorage.getItem('transactions') || '[]')
   transactions.push({ ...transaction, id: Date.now().toString() })
   localStorage.setItem('transactions', JSON.stringify(transactions))
-  
+
   // Update recent vendors
   if (!recentVendors.value.includes(values.vendor)) {
     recentVendors.value.push(values.vendor)
     localStorage.setItem('recentVendors', JSON.stringify(recentVendors.value))
   }
-  
+
   // Reset form
   amount.value = ''
   formattedAmount.value = ''
@@ -284,4 +284,4 @@ select:focus,
   border-radius: 6px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>

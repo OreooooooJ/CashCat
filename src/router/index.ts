@@ -7,9 +7,9 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: DashboardView
-    }
-  ]
+      component: DashboardView,
+    },
+  ],
 })
 
-export default router 
+export default router
