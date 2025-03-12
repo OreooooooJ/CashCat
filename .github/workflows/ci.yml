@@ -15,13 +15,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'yarn'
       
-      - name: Install Yarn
-        run: npm install -g yarn
+      - name: Enable Corepack
+        run: corepack enable
       
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
       
       - name: Run linting
         run: yarn lint
@@ -39,13 +38,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'yarn'
       
-      - name: Install Yarn
-        run: npm install -g yarn
+      - name: Enable Corepack
+        run: corepack enable
       
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
       
       - name: Build
         run: yarn build
@@ -62,7 +60,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
-    environment: preview
     steps:
       - uses: actions/checkout@v4
       - name: Download build artifacts
@@ -85,7 +82,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: production
     steps:
       - uses: actions/checkout@v4
       - name: Download build artifacts
