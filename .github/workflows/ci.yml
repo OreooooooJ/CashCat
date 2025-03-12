@@ -22,14 +22,28 @@ jobs:
       - name: Install dependencies
         run: yarn install
       
+      - name: Setup database directories
+        run: |
+          mkdir -p server/prisma
+          touch server/prisma/dev.db
+          chmod 777 server/prisma/dev.db
+      
       - name: Generate Prisma client
         run: cd server && yarn prisma generate
+      
+      - name: Run Prisma migrations
+        run: cd server && yarn prisma migrate deploy
+        env:
+          DATABASE_URL: "file:./prisma/dev.db"
       
       - name: Run linting
         run: yarn lint
       
       - name: Run tests
         run: yarn test
+        env:
+          DATABASE_URL: "file:./prisma/dev.db"
+          JWT_SECRET: "test-jwt-secret-for-github-actions"
 
   build:
     needs: test
@@ -48,11 +62,25 @@ jobs:
       - name: Install dependencies
         run: yarn install
       
+      - name: Setup database directories
+        run: |
+          mkdir -p server/prisma
+          touch server/prisma/dev.db
+          chmod 777 server/prisma/dev.db
+      
       - name: Generate Prisma client
         run: cd server && yarn prisma generate
       
+      - name: Run Prisma migrations
+        run: cd server && yarn prisma migrate deploy
+        env:
+          DATABASE_URL: "file:./prisma/dev.db"
+      
       - name: Build
         run: yarn build
+        env:
+          DATABASE_URL: "file:./prisma/dev.db"
+          JWT_SECRET: "test-jwt-secret-for-github-actions"
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
