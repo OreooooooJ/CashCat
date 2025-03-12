@@ -189,9 +189,9 @@ describe('Authentication Endpoints', () => {
 
   describe('Error Handling', () => {
     it('should handle database connection errors gracefully', async () => {
-      // Mock prisma.user.create to throw an error
-      const originalCreate = prisma.user.create;
-      prisma.user.create = vi.fn().mockImplementation(() => {
+      // Mock prisma.user.findUnique to throw an error
+      const originalFindUnique = prisma.user.findUnique;
+      prisma.user.findUnique = vi.fn().mockImplementation(() => {
         throw new Error('Database connection error');
       });
 
@@ -199,7 +199,7 @@ describe('Authentication Endpoints', () => {
         .post('/auth/register')
         .send({
           name: 'Test User',
-          email: 'test@example.com',
+          email: 'valid@example.com',
           password: 'password123'
         })
         .expect(500);
@@ -207,7 +207,7 @@ describe('Authentication Endpoints', () => {
       expect(response.body).toHaveProperty('error', 'Internal server error');
 
       // Restore the original implementation
-      prisma.user.create = originalCreate;
+      prisma.user.findUnique = originalFindUnique;
     });
   });
 }); 
