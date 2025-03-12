@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
 import app from '../src/app';
@@ -189,18 +189,25 @@ describe('Authentication Endpoints', () => {
 
   describe('Error Handling', () => {
     it('should handle database connection errors gracefully', async () => {
-      // Temporarily disconnect prisma to simulate database error
-      await prisma.$disconnect();
+      // Mock prisma.user.create to throw an error
+      const originalCreate = prisma.user.create;
+      prisma.user.create = vi.fn().mockImplementation(() => {
+        throw new Error('Database connection error');
+      });
 
       const response = await request(app)
         .post('/auth/register')
-        .send(testUser)
+        .send({
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'password123'
+        })
         .expect(500);
 
       expect(response.body).toHaveProperty('error', 'Internal server error');
 
-      // Reconnect prisma for other tests
-      await prisma.$connect();
+      // Restore the original implementation
+      prisma.user.create = originalCreate;
     });
   });
 }); 
