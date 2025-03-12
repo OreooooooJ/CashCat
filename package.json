@@ -1,60 +1,27 @@
 {
   "name": "cashcat",
+  "version": "1.0.0",
+  "description": "CashCat - Personal Finance Management App",
   "private": true,
-  "version": "1.0.1",
-  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "type-check": "vue-tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "format": "prettier --write src/",
-    "prepare": "husky install"
-  },
-  "dependencies": {
-    "@headlessui/vue": "^1.7.23",
-    "@heroicons/vue": "^2.2.0",
-    "@vee-validate/rules": "^4.15.0",
-    "@vuelidate/core": "^2.0.3",
-    "@vuelidate/validators": "^2.0.4",
-    "@vuepic/vue-datepicker": "^11.0.1",
-    "chart.js": "^4.4.8",
-    "currency.js": "^2.0.4",
-    "firebase": "^10.8.0",
-    "pinia": "^3.0.1",
-    "pinia-plugin-persistedstate": "^4.2.0",
-    "vee-validate": "^4.15.0",
-    "vue": "^3.4.15",
-    "vue-chartjs": "^5.3.2",
-    "vue-router": "^4.5.0"
+    "dev:client": "yarn workspace cashcat-client dev",
+    "dev:server": "yarn workspace cashcat-server dev",
+    "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
+    "build:client": "yarn workspace cashcat-client build",
+    "build:server": "yarn workspace cashcat-server build",
+    "build": "yarn build:client && yarn build:server",
+    "test": "yarn workspace cashcat-client test && yarn workspace cashcat-server test",
+    "test:watch": "yarn workspace cashcat-client test:watch",
+    "test:coverage": "yarn workspace cashcat-client test:coverage",
+    "lint": "eslint --ext .js,.ts,.vue ."
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/vue": "^8.1.0",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "@vitejs/plugin-vue": "^5.0.3",
-    "@vitest/coverage-v8": "^1.0.0",
-    "@vue/test-utils": "^2.4.0",
-    "@vue/tsconfig": "^0.5.1",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-vue": "^9.0.0",
-    "husky": "^9.1.7",
-    "jsdom": "^24.0.0",
-    "lint-staged": "^15.4.3",
-    "prettier": "^3.0.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.11",
-    "vitest": "^1.0.0",
-    "vue-tsc": "^2.2.8"
+    "concurrently": "^8.2.2",
+    "eslint": "^9.22.0"
   },
-  "lint-staged": {
-    "*.{js,ts,vue}": "eslint --fix"
-  }
+  "packageManager": "yarn@4.1.1"
 }

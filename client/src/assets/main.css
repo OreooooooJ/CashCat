@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 100vh;
+  font-weight: normal;
+}
+
+/* Modal Transitions */
+.modal-enter {
+  transition: all 0.3s ease-out;
+}
+
+.modal-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modal-enter-to {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.modal-leave {
+  transition: all 0.2s ease-in;
+}
+
+.modal-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* Chart Container */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.no-data {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+} 
