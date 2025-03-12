@@ -189,21 +189,17 @@ describe('Authentication Endpoints', () => {
 
   describe('Error Handling', () => {
     it('should handle database connection errors gracefully', async () => {
-      // Create a test user with valid data that will pass validation
-      const testErrorUser = {
-        name: 'Error Test User',
-        email: 'error-test@example.com',
-        password: 'password123'
-      };
-      
       // Mock the findUnique method to throw an error
       vi.spyOn(prisma.user, 'findUnique').mockImplementationOnce(() => {
         throw new Error('Database connection error');
       });
 
       const response = await request(app)
-        .post('/auth/register')
-        .send(testErrorUser);
+        .post('/auth/login')
+        .send({
+          email: 'valid@example.com',
+          password: 'password123'
+        });
       
       // Check that we got a 500 status code
       expect(response.status).toBe(500);
