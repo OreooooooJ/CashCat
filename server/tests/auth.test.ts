@@ -196,9 +196,8 @@ describe('Authentication Endpoints', () => {
         password: 'password123'
       };
       
-      // Force an error in the database operation
-      const originalFindUnique = prisma.user.findUnique;
-      prisma.user.findUnique = vi.fn().mockImplementation(() => {
+      // Mock the findUnique method to throw an error
+      vi.spyOn(prisma.user, 'findUnique').mockImplementationOnce(() => {
         throw new Error('Database connection error');
       });
 
@@ -209,9 +208,6 @@ describe('Authentication Endpoints', () => {
       // Check that we got a 500 status code
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('error', 'Internal server error');
-
-      // Restore the original implementation
-      prisma.user.findUnique = originalFindUnique;
     });
   });
 }); 
