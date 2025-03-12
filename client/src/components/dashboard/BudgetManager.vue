@@ -111,12 +111,16 @@ const selectedPeriod = ref<'monthly' | 'yearly'>('monthly')
 
 const { budgets: mockBudgets } = getMockBudgets()
 
-const filteredBudgetSummary = computed(() =>
-  budgetSummary.value.filter(budget => {
+const filteredBudgetSummary = computed(() => {
+  if (!budgetSummary.value || budgetSummary.value.length === 0) {
+    return []
+  }
+  
+  return budgetSummary.value.filter(budget => {
     const originalBudget = mockBudgets.find(b => b.category === budget.category)
     return originalBudget?.period === selectedPeriod.value
   })
-)
+})
 
 const formatCurrency = (amount: number) => {
   return currency(amount, { symbol: '$' }).format()

@@ -38,4 +38,10 @@ module.exports = [
       'indent': ['error', 2],
     },
   },
+  {
+    files: ['server/**/*.js', 'server/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ]; 
