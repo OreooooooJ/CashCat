@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
       
+      - name: Generate Prisma client
+        run: cd server && yarn prisma generate
+      
       - name: Run linting
         run: yarn lint
       
@@ -44,6 +47,9 @@ jobs:
       
       - name: Install dependencies
         run: yarn install
+      
+      - name: Generate Prisma client
+        run: cd server && yarn prisma generate
       
       - name: Build
         run: yarn build
