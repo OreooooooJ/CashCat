@@ -189,7 +189,14 @@ describe('Authentication Endpoints', () => {
 
   describe('Error Handling', () => {
     it('should handle database connection errors gracefully', async () => {
-      // Mock prisma.user.findUnique to throw an error
+      // Create a test user with valid data that will pass validation
+      const testErrorUser = {
+        name: 'Error Test User',
+        email: 'error-test@example.com',
+        password: 'password123'
+      };
+      
+      // Force an error in the database operation
       const originalFindUnique = prisma.user.findUnique;
       prisma.user.findUnique = vi.fn().mockImplementation(() => {
         throw new Error('Database connection error');
@@ -197,13 +204,10 @@ describe('Authentication Endpoints', () => {
 
       const response = await request(app)
         .post('/auth/register')
-        .send({
-          name: 'Test User',
-          email: 'valid@example.com',
-          password: 'password123'
-        })
-        .expect(500);
-
+        .send(testErrorUser);
+      
+      // Check that we got a 500 status code
+      expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('error', 'Internal server error');
 
       // Restore the original implementation
