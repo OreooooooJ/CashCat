@@ -6,10 +6,9 @@
         :accounts="accounts"
       />
       
-      <BalanceCard
-        class="balance-card"
-        :total-income="totalIncome"
-        :total-expenses="totalExpenses"
+      <CashFlowOverview
+        class="cash-flow-overview"
+        :transactions="transactions"
       />
       
       <BudgetManager class="budget-manager" />
@@ -61,7 +60,7 @@ import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { PlusIcon } from '@heroicons/vue/24/solid'
 import AccountsOverview from '../components/dashboard/AccountsOverview.vue'
-import BalanceCard from '../components/dashboard/BalanceCard.vue'
+import CashFlowOverview from '../components/dashboard/CashFlowOverview.vue'
 import SpendingChart from '../components/dashboard/SpendingChart.vue'
 import RecentTransactions from '../components/dashboard/RecentTransactions.vue'
 import BudgetManager from '../components/dashboard/BudgetManager.vue'
@@ -149,26 +148,42 @@ onMounted(() => {
 @media (min-width: 768px) {
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "accounts accounts"
+      "cash-flow cash-flow"
+      "budget budget"
+      "spending recent";
   }
 
   .accounts-overview {
-    grid-column: 1 / -1;
+    grid-area: accounts;
   }
 
-  .balance-card {
-    grid-column: 1 / -1;
+  .cash-flow-overview {
+    grid-area: cash-flow;
   }
 
   .budget-manager {
-    grid-column: 1 / -1;
+    grid-area: budget;
   }
 
   .spending-chart {
-    grid-column: 1 / 2;
+    grid-area: spending;
   }
 
   .recent-transactions {
-    grid-column: 2 / 3;
+    grid-area: recent;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-layout {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      "accounts accounts accounts"
+      "cash-flow cash-flow cash-flow"
+      "budget budget recent"
+      "spending spending recent";
   }
 }
 
