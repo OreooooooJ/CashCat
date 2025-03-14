@@ -8,7 +8,6 @@
       
       <CashFlowOverview
         class="cash-flow-overview"
-        :transactions="transactions"
       />
       
       <BudgetManager class="budget-manager" />
@@ -68,41 +67,26 @@ import TransactionEntryView from './TransactionEntryView.vue'
 import { getMockData, categoryColors } from '../services/mockData'
 import type { Transaction } from '../types/transaction'
 import type { Account } from '../services/mockData'
+import { useTransactionStore } from '../stores/transaction'
 
 // State
 const isModalOpen = ref(false)
-const transactions = ref<Transaction[]>([])
+const transactionStore = useTransactionStore()
 const accounts = ref<Account[]>([])
 
 // Computed values
-const totalIncome = computed(() =>
-  transactions.value.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0)
-)
-
-const totalExpenses = computed(() =>
-  transactions.value.filter(t => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0)
-)
+const totalIncome = computed(() => transactionStore.totalIncome())
+const totalExpenses = computed(() => transactionStore.totalExpenses())
 
 const spendingByCategory = computed(() => {
-  const spending = new Map<string, number>()
-
-  transactions.value
-    .filter(t => t.amount < 0)
-    .forEach(t => {
-      const current = spending.get(t.category) || 0
-      spending.set(t.category, current + Math.abs(t.amount))
-    })
-
-  return Array.from(spending.entries()).map(([category, amount]) => ({
+  return transactionStore.getSpendingByCategory().map(({ category, amount }) => ({
     category,
     amount,
     color: categoryColors[category as keyof typeof categoryColors] || categoryColors.Other,
   }))
 })
 
-const recentTransactions = computed(() =>
-  [...transactions.value].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5)
-)
+const recentTransactions = computed(() => transactionStore.getRecentTransactions(5))
 
 // Methods
 const openTransactionForm = () => {
@@ -113,19 +97,23 @@ const closeTransactionForm = () => {
   isModalOpen.value = false
 }
 
-const onTransactionAdded = (transaction: Transaction) => {
-  transactions.value.push(transaction)
-  closeTransactionForm()
+const onTransactionAdded = async (transaction: Transaction) => {
+  try {
+    await transactionStore.addTransaction(transaction)
+    closeTransactionForm()
+  } catch (error) {
+    console.error('Failed to add transaction:', error)
+    // You could add error handling UI here
+  }
 }
 
 // Load initial data
-onMounted(() => {
-  const { accounts: mockAccounts, transactions: mockTransactions } = getMockData()
+onMounted(async () => {
+  const { accounts: mockAccounts } = getMockData()
   accounts.value = mockAccounts
-  transactions.value = mockTransactions.map(t => ({
-    ...t,
-    date: new Date(t.date),
-  }))
+  
+  // Fetch real transaction data from API
+  await transactionStore.fetchTransactions()
 })
 </script>
 

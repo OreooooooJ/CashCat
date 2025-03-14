@@ -74,10 +74,9 @@ import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/vue/24/so
 import currency from 'currency.js'
 import Chart from 'chart.js/auto'
 import type { Transaction } from '@/types/transaction'
+import { useTransactionStore } from '@/stores/transaction'
 
-const props = defineProps<{
-  transactions: Transaction[]
-}>()
+const transactionStore = useTransactionStore()
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null)
 const timePeriod = ref<'monthly' | 'yearly'>('monthly')
@@ -88,7 +87,7 @@ const now = new Date()
 const currentMonth = now.getMonth()
 const currentYear = now.getFullYear()
 
-// Helper function to group transactions by month or year
+// Helper function to group transactions by period
 const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod = false) => {
   const result = {
     income: 0,
@@ -131,10 +130,10 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
 }
 
 // Calculate current period totals
-const currentPeriodData = computed(() => groupTransactionsByPeriod(props.transactions))
+const currentPeriodData = computed(() => groupTransactionsByPeriod(transactionStore.transactions))
 
 // Calculate previous period totals
-const previousPeriodData = computed(() => groupTransactionsByPeriod(props.transactions, true))
+const previousPeriodData = computed(() => groupTransactionsByPeriod(transactionStore.transactions, true))
 
 // Current period values
 const totalIncome = computed(() => currentPeriodData.value.income)
@@ -192,7 +191,7 @@ const getHistoricalData = () => {
       labels.push(months[monthIndex])
       
       // Filter transactions for this month
-      const monthlyData = props.transactions.reduce((acc, transaction) => {
+      const monthlyData = transactionStore.transactions.reduce((acc, transaction) => {
         const transactionDate = new Date(transaction.date)
         if (transactionDate.getMonth() === monthIndex && transactionDate.getFullYear() === year) {
           if (transaction.amount > 0) {
@@ -214,7 +213,7 @@ const getHistoricalData = () => {
       labels.push(months[i])
       
       // Filter transactions for this month in current year
-      const monthlyData = props.transactions.reduce((acc, transaction) => {
+      const monthlyData = transactionStore.transactions.reduce((acc, transaction) => {
         const transactionDate = new Date(transaction.date)
         if (transactionDate.getMonth() === i && transactionDate.getFullYear() === currentYear) {
           if (transaction.amount > 0) {
