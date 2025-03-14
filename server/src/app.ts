@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth';
 import { authenticateToken } from './middleware/auth';
 import transactionRouter from './routes/transactions';
 import budgetRouter from './routes/budgets';
+import userRouter from './routes/users';
 
 dotenv.config();
 
@@ -142,6 +143,7 @@ app.post('/auth/login', async (req, res) => {
 app.use('/auth', authRouter);
 app.use('/api/transactions', authenticateToken, transactionRouter);
 app.use('/api/budgets', authenticateToken, budgetRouter);
+app.use('/api/users', userRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3000;

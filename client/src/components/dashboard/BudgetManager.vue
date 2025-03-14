@@ -157,10 +157,35 @@ const onBudgetSave = (budget: Budget) => {
   closeBudgetForm()
 }
 
+// Helper function to determine budget status
+const getStatus = (spent: number, amount: number): 'good' | 'warning' | 'critical' => {
+  const percentage = (spent / amount) * 100;
+  if (percentage >= 90) return 'critical';
+  if (percentage >= 70) return 'warning';
+  return 'good';
+};
+
+const getBudgetColor = (category: string) => {
+  // Find the budget by category
+  const budget = mockBudgets.find(b => b.category === category);
+  if (!budget) return '#6B7280'; // gray default
+  
+  // Calculate percentage spent
+  const percentSpent = (budget.spent / budget.amount) * 100;
+  return getBudgetColor(percentSpent);
+};
+
 onMounted(() => {
-  const { summary } = getMockBudgets()
-  budgetSummary.value = summary
-})
+  // Create budget summary from mock budgets
+  const { budgets } = getMockBudgets();
+  budgetSummary.value = budgets.map(budget => ({
+    category: budget.category,
+    amount: budget.amount,
+    spent: budget.spent,
+    status: getStatus(budget.spent, budget.amount),
+    percentSpent: (budget.spent / budget.amount) * 100
+  }));
+});
 </script>
 
 <style scoped>
