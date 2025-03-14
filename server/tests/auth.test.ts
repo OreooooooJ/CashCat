@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
 import app from '../src/app';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -14,6 +15,24 @@ describe('Authentication Endpoints', () => {
 
   beforeAll(async () => {
     // Clean up test data before running tests
+    // First delete related records (transactions, budgets)
+    await prisma.transaction.deleteMany({
+      where: {
+        user: {
+          email: testUser.email
+        }
+      }
+    });
+    
+    await prisma.budget.deleteMany({
+      where: {
+        user: {
+          email: testUser.email
+        }
+      }
+    });
+    
+    // Then delete the user
     await prisma.user.deleteMany({
       where: {
         email: testUser.email
@@ -23,11 +42,30 @@ describe('Authentication Endpoints', () => {
 
   afterAll(async () => {
     // Clean up test data after tests
+    // First delete related records (transactions, budgets)
+    await prisma.transaction.deleteMany({
+      where: {
+        user: {
+          email: testUser.email
+        }
+      }
+    });
+    
+    await prisma.budget.deleteMany({
+      where: {
+        user: {
+          email: testUser.email
+        }
+      }
+    });
+    
+    // Then delete the user
     await prisma.user.deleteMany({
       where: {
         email: testUser.email
       }
     });
+    
     await prisma.$disconnect();
   });
 

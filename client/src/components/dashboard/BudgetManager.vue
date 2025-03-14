@@ -58,7 +58,7 @@
             {{ budget.remaining >= 0 ? 'Remaining: ' : 'Over by: ' }}
             {{ formatCurrency(Math.abs(budget.remaining)) }}
           </span>
-          <span class="percentage"> {{ budget.percentageUsed.toFixed(1) }}% </span>
+          <span class="percentage"> {{ budget.percentageUsed?.toFixed(1) || '0.0' }}% </span>
         </div>
       </div>
     </div>
