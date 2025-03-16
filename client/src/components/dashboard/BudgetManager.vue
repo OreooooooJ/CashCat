@@ -165,14 +165,20 @@ const getStatus = (spent: number, amount: number): 'good' | 'warning' | 'critica
   return 'good';
 };
 
-const getBudgetColor = (category: string) => {
+const getBudgetColorByPercentage = (percentSpent: number) => {
+  if (percentSpent >= 90) return '#EF4444'; // red for critical
+  if (percentSpent >= 70) return '#F59E0B'; // amber for warning
+  return '#10B981'; // green for good
+};
+
+const getBudgetColorByCategory = (category: string) => {
   // Find the budget by category
   const budget = mockBudgets.find(b => b.category === category);
   if (!budget) return '#6B7280'; // gray default
   
   // Calculate percentage spent
   const percentSpent = (budget.spent / budget.amount) * 100;
-  return getBudgetColor(percentSpent);
+  return getBudgetColorByPercentage(percentSpent);
 };
 
 onMounted(() => {

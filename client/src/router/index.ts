@@ -35,6 +35,16 @@ const router = createRouter({
           component: () => import('@/views/TransactionsView.vue')
         },
         {
+          path: '/accounts',
+          name: 'accounts',
+          component: () => import('@/views/AccountsView.vue')
+        },
+        {
+          path: '/accounts/:id',
+          name: 'account-detail',
+          component: () => import('@/views/AccountDetailView.vue')
+        },
+        {
           path: '/analytics',
           name: 'analytics',
           component: () => import('@/views/AnalyticsView.vue')
@@ -52,8 +62,12 @@ const router = createRouter({
 // Helper function to check authentication status
 function isUserAuthenticated() {
   try {
-    return localStorage.getItem('token') !== null;
-  } catch (e) {
+    // Check if we're in a browser environment
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('token') !== null;
+    }
+    return false;
+  } catch (_) {
     return false;
   }
 }
