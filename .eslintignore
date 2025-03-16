@@ -1,0 +1,12 @@
+# Ignore all dist files
+client/dist/**/*
+dist/**/*
+
+# Ignore node_modules
+node_modules/**/*
+
+# Ignore minified files
+*.min.js
+
+# Ignore build files
+build/**/* 
