@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth';
 import { authenticateToken } from './middleware/auth';
 import transactionRouter from './routes/transactions';
 import budgetRouter from './routes/budgets';
+import userRouter from './routes/users';
 
 dotenv.config();
 
@@ -26,7 +27,23 @@ app.get('/health', (req, res) => {
 // Auth routes
 app.post('/auth/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
+    
+    // Validate required fields
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Name, email and password are required' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Validate password length
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -73,7 +90,18 @@ app.post('/auth/register', async (req, res) => {
 
 app.post('/auth/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
+
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
 
     // Find user
     const user = await prisma.user.findUnique({
@@ -115,6 +143,7 @@ app.post('/auth/login', async (req, res) => {
 app.use('/auth', authRouter);
 app.use('/api/transactions', authenticateToken, transactionRouter);
 app.use('/api/budgets', authenticateToken, budgetRouter);
+app.use('/api/users', userRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3000;

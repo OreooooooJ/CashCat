@@ -19,7 +19,7 @@
             v-for="account in debitAccounts"
             :key="account.id"
             class="account-card"
-            :style="{ borderLeftColor: account.color }"
+            :style="{ borderLeftColor: account.color || '#10B981' }"
           >
             <div class="account-info">
               <div class="primary">
@@ -27,8 +27,9 @@
                 <span class="balance">{{ formatCurrency(account.balance) }}</span>
               </div>
               <div class="secondary">
-                <span class="institution">{{ account.institution }}</span>
-                <span class="last-four">•••• {{ account.lastFour }}</span>
+                <span class="institution">{{ account.institution || 'No Institution' }}</span>
+                <span v-if="account.lastFour" class="last-four">•••• {{ account.lastFour }}</span>
+                <span v-else class="last-four">No Card</span>
               </div>
             </div>
           </div>
@@ -43,7 +44,7 @@
             v-for="account in creditAccounts"
             :key="account.id"
             class="account-card"
-            :style="{ borderLeftColor: account.color }"
+            :style="{ borderLeftColor: account.color || '#EF4444' }"
           >
             <div class="account-info">
               <div class="primary">
@@ -51,8 +52,9 @@
                 <span class="balance negative">{{ formatCurrency(account.balance) }}</span>
               </div>
               <div class="secondary">
-                <span class="institution">{{ account.institution }}</span>
-                <span class="last-four">•••• {{ account.lastFour }}</span>
+                <span class="institution">{{ account.institution || 'No Institution' }}</span>
+                <span v-if="account.lastFour" class="last-four">•••• {{ account.lastFour }}</span>
+                <span v-else class="last-four">No Card</span>
               </div>
             </div>
           </div>
@@ -65,7 +67,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import currency from 'currency.js'
-import type { Account } from '../../services/mockData'
+import type { Account } from '../../types/account'
 
 const props = defineProps<{
   accounts: Account[]

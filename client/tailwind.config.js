@@ -4,6 +4,7 @@ export default {
     './index.html',
     './src/**/*.{vue,js,ts,jsx,tsx}'
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -19,6 +20,14 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
           950: '#082f49',
+        },
+        // Mint-inspired color palette
+        mint: {
+          primary: '#2eb886',
+          dark: '#0d7a5f',
+          light: '#a3e4c9',
+          lighter: '#d7f4e8',
+          accent: '#14b8a6',
         },
       },
       fontFamily: {

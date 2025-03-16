@@ -105,7 +105,7 @@ describe('MockData Service', () => {
     it('should have valid emoji or symbol for all subcategories', () => {
       Object.values(subcategoryIcons).forEach(icon => {
         // Match both Unicode emojis and simple symbols
-        expect(icon).toMatch(/[\u{1F300}-\u{1F9FF}]|[☕⛽↔️💡📺🛒🍽️]/u)
+        expect(icon).toMatch(/[\u{1F300}-\u{1F9FF}]|[☕⛽↔💡📺🛒🍽]/u)
       })
     })
 

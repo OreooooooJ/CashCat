@@ -6,10 +6,8 @@
         :accounts="accounts"
       />
       
-      <BalanceCard
-        class="balance-card"
-        :total-income="totalIncome"
-        :total-expenses="totalExpenses"
+      <CashFlowOverview
+        class="cash-flow-overview"
       />
       
       <BudgetManager class="budget-manager" />
@@ -61,7 +59,7 @@ import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { PlusIcon } from '@heroicons/vue/24/solid'
 import AccountsOverview from '../components/dashboard/AccountsOverview.vue'
-import BalanceCard from '../components/dashboard/BalanceCard.vue'
+import CashFlowOverview from '../components/dashboard/CashFlowOverview.vue'
 import SpendingChart from '../components/dashboard/SpendingChart.vue'
 import RecentTransactions from '../components/dashboard/RecentTransactions.vue'
 import BudgetManager from '../components/dashboard/BudgetManager.vue'
@@ -69,41 +67,26 @@ import TransactionEntryView from './TransactionEntryView.vue'
 import { getMockData, categoryColors } from '../services/mockData'
 import type { Transaction } from '../types/transaction'
 import type { Account } from '../services/mockData'
+import { useTransactionStore } from '../stores/transaction'
 
 // State
 const isModalOpen = ref(false)
-const transactions = ref<Transaction[]>([])
+const transactionStore = useTransactionStore()
 const accounts = ref<Account[]>([])
 
 // Computed values
-const totalIncome = computed(() =>
-  transactions.value.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0)
-)
-
-const totalExpenses = computed(() =>
-  transactions.value.filter(t => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0)
-)
+const totalIncome = computed(() => transactionStore.totalIncome())
+const totalExpenses = computed(() => transactionStore.totalExpenses())
 
 const spendingByCategory = computed(() => {
-  const spending = new Map<string, number>()
-
-  transactions.value
-    .filter(t => t.amount < 0)
-    .forEach(t => {
-      const current = spending.get(t.category) || 0
-      spending.set(t.category, current + Math.abs(t.amount))
-    })
-
-  return Array.from(spending.entries()).map(([category, amount]) => ({
+  return transactionStore.getSpendingByCategory().map(({ category, amount }) => ({
     category,
     amount,
     color: categoryColors[category as keyof typeof categoryColors] || categoryColors.Other,
   }))
 })
 
-const recentTransactions = computed(() =>
-  [...transactions.value].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5)
-)
+const recentTransactions = computed(() => transactionStore.getRecentTransactions(5))
 
 // Methods
 const openTransactionForm = () => {
@@ -114,19 +97,23 @@ const closeTransactionForm = () => {
   isModalOpen.value = false
 }
 
-const onTransactionAdded = (transaction: Transaction) => {
-  transactions.value.push(transaction)
-  closeTransactionForm()
+const onTransactionAdded = async (transaction: Transaction) => {
+  try {
+    await transactionStore.addTransaction(transaction)
+    closeTransactionForm()
+  } catch (error) {
+    console.error('Failed to add transaction:', error)
+    // You could add error handling UI here
+  }
 }
 
 // Load initial data
-onMounted(() => {
-  const { accounts: mockAccounts, transactions: mockTransactions } = getMockData()
+onMounted(async () => {
+  const { accounts: mockAccounts } = getMockData()
   accounts.value = mockAccounts
-  transactions.value = mockTransactions.map(t => ({
-    ...t,
-    date: new Date(t.date),
-  }))
+  
+  // Fetch real transaction data from API
+  await transactionStore.fetchTransactions()
 })
 </script>
 
@@ -149,26 +136,42 @@ onMounted(() => {
 @media (min-width: 768px) {
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "accounts accounts"
+      "cash-flow cash-flow"
+      "budget budget"
+      "spending recent";
   }
 
   .accounts-overview {
-    grid-column: 1 / -1;
+    grid-area: accounts;
   }
 
-  .balance-card {
-    grid-column: 1 / -1;
+  .cash-flow-overview {
+    grid-area: cash-flow;
   }
 
   .budget-manager {
-    grid-column: 1 / -1;
+    grid-area: budget;
   }
 
   .spending-chart {
-    grid-column: 1 / 2;
+    grid-area: spending;
   }
 
   .recent-transactions {
-    grid-column: 2 / 3;
+    grid-area: recent;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-layout {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      "accounts accounts accounts"
+      "cash-flow cash-flow cash-flow"
+      "budget budget recent"
+      "spending spending recent";
   }
 }
 
