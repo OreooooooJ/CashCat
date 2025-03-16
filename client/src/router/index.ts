@@ -61,6 +61,11 @@ const router = createRouter({
 
 // Helper function to check authentication status
 function isUserAuthenticated() {
+  // AUTHENTICATION TEMPORARILY DISABLED
+  // Always return true to bypass authentication checks
+  return true;
+  
+  /* Original authentication logic:
   try {
     // Check if we're in a browser environment
     if (typeof localStorage !== 'undefined') {
@@ -70,6 +75,7 @@ function isUserAuthenticated() {
   } catch (_) {
     return false;
   }
+  */
 }
 
 // Navigation guard

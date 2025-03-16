@@ -1,11 +1,12 @@
 {
-  "name": "cashcat-server",
+  "name": "server",
   "version": "1.0.0",
-  "description": "CashCat Backend API",
+  "description": "CashCat Server API",
   "main": "dist/app.js",
+  "type": "module",
   "scripts": {
     "start": "node dist/app.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev": "node server.js",
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -13,18 +14,24 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "seed": "ts-node src/scripts/seedData.ts"
+    "seed": "node --loader ts-node/esm src/scripts/seedData.ts",
+    "db:migrate": "node --loader ts-node/esm src/scripts/applyMigration.ts",
+    "analyze:categories": "node --loader ts-node/esm src/scripts/analyzeCategoryChanges.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "@types/multer": "^1.4.12",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Base Guidelines for Sonnet-3.7 + Cursor Agent
+globs: *.py, *.js, */src/* 
+---
+
+# Instructions
+
+1. Always execute `codebase_search` in `/Users/easonj/CursorProject/CashCat` **before** creating or modifying any files. If no relevant results are found, verify manually before proceeding.
+2. Always check the **purpose and functionality** of existing system files before creating new ones with similar functionality.
+3. Always list the Cursor rules you are using in a **comment at the top of generated code** or in a **log statement** if applicable.
+
+# Best Practices (Mandatory Where Applicable)
+
+- **Strictly follow** all prompt instructions regarding behaviors, languages, and output formats without deviation.
+- **Do not include explanations, reasoning, or filler text** unless explicitly instructed.
+- **Respond in the exact format requested.** If multiple steps or sub-requests are given, follow the order specified.
+- **Adhere to all constraints** (e.g., language choice, performance goals, coding style) with no exceptions.
+- **Only provide relevant output.** Do not add features, code, or details beyond what is explicitly asked.
+- **Maintain concise yet complete responses.** Avoid unnecessary verbosity or tangential remarks.
+- **If a specific output format is requested (e.g., JSON, fenced code blocks, bullet points), follow it exactly.**
+- **If a prompt includes a pre-seeded answer structure, continue within that structure without adding extra text.**
+- **For ambiguous requests,** ask clarifying questions unless otherwise instructed. If clarification is not allowed, state that more information is needed.
+- **Follow best practices** for maintainability, efficiency, and clarity in code generation/modifications.
+- **Do not generate or include private data (API keys, secrets) unless explicitly provided.** If a request poses a security or ethical risk, defer to best practices or deny it.
+

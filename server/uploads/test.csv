@@ -1,0 +1,34 @@
+Date,Description,Card Member,Account #,Amount,Category
+02/26/2025,WALMART.COM W+ AMEX BENTONVILLE         AR,testerFirstName testerLastName,-71002,12.95,Retail
+02/24/2025,AplPay HEYTEA-US- ALALLSTON             MA,testerFirstName testerLastName,-71002,14.08,Dining
+02/24/2025,OPENAI *CHATGPT SUBSSAN FRANCISCO       CA,testerFirstName testerLastName,-71002,20.00,Subscription
+02/24/2025,XIN MULAN LLC 00-080WALTHAM             MA,testerFirstName testerLastName,-71002,82.12,Dining
+02/23/2025,AMAZON MARKEPLACE NA PA,testerFirstName testerLastName,-71002,84.99,Online Shopping
+02/23/2025,AMAZON MARKEPLACE NA PA,testerFirstName testerLastName,-71002,127.49,Online Shopping
+02/23/2025,AMAZON.COM          AMZN.COM/BILL       WA,testerFirstName testerLastName,-71002,53.10,Online Shopping
+02/22/2025,AplPay STOP & SHOP  NATICK              MA,testerFirstName testerLastName,-71002,2.89,Groceries
+02/20/2025,AUTOPAY PAYMENT - THANK YOU,testerFirstName testerLastName,-71002,-2566.99,Payment
+02/17/2025,HELIUM MOBILE       LAS VEGAS           NV,testerFirstName testerLastName,-71002,-21.77,Telecommunications
+02/17/2025,THE HOME DEPOT      NATICK              MA,testerFirstName testerLastName,-71002,41.34,Home Improvement
+02/16/2025,Amazon Prime        Amazon.com          WA,testerFirstName testerLastName,-71002,139.00,Subscription
+02/16/2025,AplPay AMC          LOS ANGELES         CA,testerFirstName testerLastName,-71002,14.36,Entertainment
+02/16/2025,HELIUM MOBILE       LAS VEGAS           NV,testerFirstName testerLastName,-71002,21.77,Telecommunications
+02/15/2025,AplPay SP SINGER    NASHVILLE           TN,testerFirstName testerLastName,-71002,-423.94,Dining
+02/15/2025,AplPay TRADER JOE S FRAMINGHAM          MA,testerFirstName testerLastName,-71002,80.43,Groceries
+02/15/2025,AplPay WHOLE FOODS MFRAMINGHAM          MA,testerFirstName testerLastName,-71002,114.31,Groceries
+02/15/2025,PAYPAL *CARDCASH    8002274214          NJ,testerFirstName testerLastName,-71002,23.00,Financial Transaction
+02/14/2025,AplPay KFC          FRAMINGHAM          MA,testerFirstName testerLastName,-71002,29.95,Dining
+02/13/2025,JARED.COM #2001     KING OF PRUSSIA,testerFirstName testerLastName,-71002,-100.00,Retail
+02/13/2025,UBER EATS           help.uber.com       CA,testerFirstName testerLastName,-71002,3.70,Dining
+02/12/2025,AplPay JARED DIAMONDAKRON               OH,testerFirstName testerLastName,-71002,610.94,Retail
+02/10/2025,DISNEYPLUS          888-905-7888        CA,testerFirstName testerLastName,-71002,16.99,Subscription
+02/10/2025,Platinum Digital Entertainment Credit,testerFirstName testerLastName,-71002,-16.99,Refund/Adjustment
+02/09/2025,GOOGLE *YOUTUBEPREMI G.CO/HELPPAY#      CA,testerFirstName testerLastName,-71002,22.99,Subscription
+02/08/2025,SICHUAN GOURMET     FRAMINGHAM          MA,testerFirstName testerLastName,-71002,55.59,Dining
+02/07/2025,AplPay TERRA BRASILIFRAMINGHAM          MA,testerFirstName testerLastName,-71002,36.17,Dining
+02/03/2025,AplPay AMC          LOS ANGELES         CA,testerFirstName testerLastName,-71002,10.36,Entertainment
+02/02/2025,PAYPAL *CARDCASH    8002274214          NJ,testerFirstName testerLastName,-71002,22.70,Financial Transaction
+02/02/2025,"TESLA, INC. SUBSCRIPPALO ALTO           CA",testerFirstName testerLastName,-71002,105.19,Subscription
+01/31/2025,AplPay PET SUPPLIES LIVONIA             MI,testerFirstName testerLastName,-71002,42.48,Pet Supplies
+01/30/2025,AplPay STOP & SHOP  NATICK              MA,testerFirstName testerLastName,-71002,5.09,Groceries
+01/29/2025,AMAZON MARKEPLACE NA PA,testerFirstName testerLastName,-71002,33.88,Online Shopping

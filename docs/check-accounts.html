@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Accounts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .account {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .account-header {
+      display: flex;
+      justify-content: space-between;
+    }
+    .account-type {
+      font-size: 0.8em;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+    .debit {
+      background-color: #10B981;
+    }
+    .credit {
+      background-color: #EF4444;
+    }
+    .investment {
+      background-color: #8B5CF6;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #3B82F6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2563EB;
+    }
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Account Checker</h1>
+  <button id="check-accounts">Check Accounts</button>
+  <div id="error"></div>
+  <div id="accounts-container"></div>
+
+  <script>
+    document.getElementById('check-accounts').addEventListener('click', async () => {
+      try {
+        // First get a token
+        const loginResponse = await fetch('http://localhost:3000/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: 'test@example.com',
+            password: 'password123'
+          })
+        });
+        
+        if (!loginResponse.ok) {
+          throw new Error('Login failed');
+        }
+        
+        const loginData = await loginResponse.json();
+        const token = loginData.token;
+        
+        // Now fetch accounts
+        const accountsResponse = await fetch('http://localhost:3000/api/accounts', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!accountsResponse.ok) {
+          throw new Error('Failed to fetch accounts');
+        }
+        
+        const accounts = await accountsResponse.json();
+        console.log('Accounts from API:', accounts);
+        
+        const container = document.getElementById('accounts-container');
+        container.innerHTML = '';
+        
+        if (accounts.length === 0) {
+          container.innerHTML = '<p>No accounts found</p>';
+          return;
+        }
+        
+        // Group accounts by type
+        const accountsByType = {
+          debit: accounts.filter(a => a.type === 'debit'),
+          credit: accounts.filter(a => a.type === 'credit'),
+          investment: accounts.filter(a => a.type === 'investment')
+        };
+        
+        // Display summary
+        const summary = document.createElement('div');
+        summary.innerHTML = `
+          <h2>Summary</h2>
+          <p>Total accounts: ${accounts.length}</p>
+          <p>Debit accounts: ${accountsByType.debit.length}</p>
+          <p>Credit accounts: ${accountsByType.credit.length}</p>
+          <p>Investment accounts: ${accountsByType.investment.length}</p>
+        `;
+        container.appendChild(summary);
+        
+        // Display accounts by type
+        for (const [type, typeAccounts] of Object.entries(accountsByType)) {
+          if (typeAccounts.length === 0) continue;
+          
+          const section = document.createElement('div');
+          section.innerHTML = `<h2>${type.charAt(0).toUpperCase() + type.slice(1)} Accounts</h2>`;
+          container.appendChild(section);
+          
+          typeAccounts.forEach(account => {
+            const accountEl = document.createElement('div');
+            accountEl.className = 'account';
+            accountEl.innerHTML = `
+              <div class="account-header">
+                <h3>${account.name}</h3>
+                <span class="account-type ${account.type}">${account.type}</span>
+              </div>
+              <p>Balance: $${account.balance.toFixed(2)}</p>
+              <p>Institution: ${account.institution || 'N/A'}</p>
+              <p>Last Four: ${account.lastFour || 'N/A'}</p>
+              <p>ID: ${account.id}</p>
+            `;
+            container.appendChild(accountEl);
+          });
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('error').textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html> 

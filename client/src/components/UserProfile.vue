@@ -97,6 +97,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+import api from '@/utils/api';
 
 const API_URL = '/api/users';
 const profile = ref({
@@ -113,6 +114,7 @@ const error = ref('');
 const isEditing = ref(false);
 const updateLoading = ref(false);
 const updateError = ref('');
+const success = ref('');
 
 const editForm = reactive({
   name: '',
@@ -130,26 +132,12 @@ async function fetchProfile() {
   error.value = '';
   
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Not authenticated');
-    }
-    
-    const response = await fetch(`${API_URL}/profile`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch profile');
-    }
-    
-    const data = await response.json();
-    profile.value = data;
+    // Using the api utility with authentication handled by interceptor
+    const response = await api.get('/api/users/profile');
+    profile.value = response.data;
   } catch (err) {
     console.error('Error fetching profile:', err);
-    error.value = 'Failed to load profile information. Please try again.';
+    error.value = 'Failed to fetch profile';
   } finally {
     loading.value = false;
   }
@@ -169,55 +157,26 @@ function cancelEditing() {
 }
 
 async function updateProfile() {
-  // Validate password match if provided
-  if (editForm.password && editForm.password !== editForm.confirmPassword) {
-    updateError.value = 'Passwords do not match';
-    return;
-  }
-  
-  updateLoading.value = true;
-  updateError.value = '';
+  loading.value = true;
+  error.value = '';
+  success.value = '';
   
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Not authenticated');
-    }
-    
-    // Prepare update data
-    const updateData = {
-      name: editForm.name,
-      email: editForm.email
-    };
-    
-    // Only include password if provided
-    if (editForm.password) {
-      updateData.password = editForm.password;
-    }
-    
-    const response = await fetch(`${API_URL}/profile`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(updateData)
+    // Using the api utility with authentication handled by interceptor
+    const response = await api.put('/api/users/profile', {
+      name: profile.value.name,
+      email: profile.value.email,
+      ...(editForm.password ? { password: editForm.password } : {})
     });
     
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update profile');
-    }
-    
-    // Update was successful
-    const data = await response.json();
-    profile.value = data;
+    profile.value = response.data;
+    success.value = 'Profile updated successfully';
     isEditing.value = false;
   } catch (err) {
     console.error('Error updating profile:', err);
-    updateError.value = err.message || 'Failed to update profile. Please try again.';
+    error.value = 'Failed to update profile';
   } finally {
-    updateLoading.value = false;
+    loading.value = false;
   }
 }
 

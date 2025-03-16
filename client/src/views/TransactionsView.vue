@@ -2,10 +2,22 @@
   <div class="transactions-view">
     <div class="page-header">
       <h1>Transactions</h1>
-      <button class="add-transaction-btn" @click="showAddTransactionModal = true">
-        <PlusIcon class="w-5 h-5 mr-2" />
-        Add Transaction
-      </button>
+      <div class="transactions-actions">
+        <button 
+          @click="showCsvImportModal = true" 
+          class="btn-secondary flex items-center"
+        >
+          <ReceiptRefundIcon class="h-5 w-5 mr-1" />
+          Import CSV
+        </button>
+        <button 
+          @click="showAddTransactionModal = true" 
+          class="btn-primary flex items-center"
+        >
+          <PlusIcon class="h-5 w-5 mr-1" />
+          Add Transaction
+        </button>
+      </div>
     </div>
 
     <div class="filters">
@@ -23,8 +35,8 @@
         <label for="type-filter">Type</label>
         <select id="type-filter" v-model="typeFilter">
           <option value="">All Types</option>
-          <option value="INCOME">Income</option>
-          <option value="EXPENSE">Expense</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
         </select>
       </div>
 
@@ -73,12 +85,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="transaction in filteredTransactions" :key="transaction.id" :class="{ 'income': transaction.amount > 0 }">
+          <tr v-for="transaction in filteredTransactions" :key="transaction.id" :class="{ 'income': transaction.type === 'income' }">
             <td>{{ formatDate(transaction.date) }}</td>
             <td>{{ transaction.description || transaction.vendor }}</td>
             <td>{{ transaction.category }}</td>
             <td>{{ getAccountName(transaction.accountId) }}</td>
-            <td class="amount-column" :class="{ 'income': transaction.amount > 0, 'expense': transaction.amount < 0 }">
+            <td class="amount-column" :class="{ 'income': transaction.type === 'income', 'expense': transaction.type === 'expense' }">
               {{ formatCurrency(transaction.amount) }}
             </td>
             <td class="actions-column">
@@ -108,7 +120,31 @@
           >
             <DialogPanel class="modal-panel">
               <DialogTitle as="h3" class="modal-title">Add Transaction</DialogTitle>
-              <TransactionEntryView @save="onTransactionAdded" @close="closeTransactionForm" />
+              <TransactionEntryForm @save="onTransactionAdded" @close="closeTransactionForm" />
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- CSV Import Modal -->
+    <TransitionRoot appear :show="showCsvImportModal" as="template">
+      <Dialog as="div" class="modal-wrapper" @close="closeCsvImportModal">
+        <div class="modal-backdrop" aria-hidden="true" />
+        
+        <div class="modal-container">
+          <TransitionChild
+            as="template"
+            enter="modal-enter"
+            enter-from="modal-enter-from"
+            enter-to="modal-enter-to"
+            leave="modal-leave"
+            leave-from="modal-leave-from"
+            leave-to="modal-leave-to"
+          >
+            <DialogPanel class="modal-panel">
+              <DialogTitle as="h3" class="modal-title">Import Transactions</DialogTitle>
+              <CsvImportModal @imported="onTransactionsImported" @close="closeCsvImportModal" />
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -121,7 +157,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue';
 import { PlusIcon, TrashIcon, ExclamationCircleIcon, ReceiptRefundIcon } from '@heroicons/vue/24/outline';
-import TransactionEntryView from './TransactionEntryView.vue';
+import TransactionEntryForm from '../components/TransactionEntryForm.vue';
+import CsvImportModal from '../components/CsvImportModal.vue';
 import { useTransactionStore } from '../stores/transaction';
 import { useAccountStore } from '../stores/account';
 import currency from 'currency.js';
@@ -133,6 +170,7 @@ const accountStore = useAccountStore();
 
 // State
 const showAddTransactionModal = ref(false);
+const showCsvImportModal = ref(false);
 const accountFilter = ref('');
 const typeFilter = ref('');
 const categoryFilter = ref('');
@@ -207,8 +245,16 @@ const closeTransactionForm = () => {
   showAddTransactionModal.value = false;
 };
 
+const closeCsvImportModal = () => {
+  showCsvImportModal.value = false;
+};
+
 const onTransactionAdded = async () => {
   closeTransactionForm();
+  await fetchTransactions();
+};
+
+const onTransactionsImported = async () => {
   await fetchTransactions();
 };
 
@@ -216,8 +262,8 @@ const fetchTransactions = async () => {
   await transactionStore.fetchTransactions();
 };
 
-const deleteTransaction = async (id: string) => {
-  if (isDeleting.value) return;
+const deleteTransaction = async (id: string | undefined) => {
+  if (isDeleting.value || !id) return;
   
   if (!confirm('Are you sure you want to delete this transaction?')) {
     return;
@@ -262,12 +308,16 @@ h1 {
   margin: 0;
 }
 
-.add-transaction-btn {
+.transactions-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-secondary,
+.btn-primary {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: #3b82f6;
-  color: white;
   border: none;
   border-radius: 0.375rem;
   font-size: 0.875rem;
@@ -276,7 +326,21 @@ h1 {
   transition: background-color 0.2s;
 }
 
-.add-transaction-btn:hover {
+.btn-secondary {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-primary:hover {
   background: #2563eb;
 }
 

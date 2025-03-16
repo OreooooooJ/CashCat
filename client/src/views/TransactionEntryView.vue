@@ -23,16 +23,31 @@
       </div>
       
       <div class="form-group">
-        <label for="vendor">Vendor</label>
+        <label for="type">Type</label>
+        <select
+          id="type"
+          v-model="transaction.type"
+          required
+        >
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <div v-if="v$.type.$error" class="error-message">
+          {{ v$.type.$errors[0].$message }}
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Description</label>
         <input
-          id="vendor"
-          v-model="transaction.vendor"
+          id="description"
+          v-model="transaction.description"
           type="text"
-          placeholder="Enter vendor name"
+          placeholder="Enter transaction description"
           required
         />
-        <div v-if="v$.vendor.$error" class="error-message">
-          {{ v$.vendor.$errors[0].$message }}
+        <div v-if="v$.description.$error" class="error-message">
+          {{ v$.description.$errors[0].$message }}
         </div>
       </div>
       
@@ -64,16 +79,6 @@
             {{ account.name }}
           </option>
         </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="description">Description (Optional)</label>
-        <textarea
-          id="description"
-          v-model="transaction.description"
-          placeholder="Add notes about this transaction"
-          rows="3"
-        ></textarea>
       </div>
       
       <div class="form-group">
@@ -138,7 +143,7 @@ const submitResult = ref('');
 // Form state
 const transaction = ref({
   amount: '',
-  vendor: '',
+  type: 'expense',
   category: '',
   description: '',
   date: new Date(),
@@ -179,7 +184,7 @@ const categories = [
 // Validation rules
 const rules = {
   amount: { required, minValue: minValue(0.01) },
-  vendor: { required },
+  description: { required },
   category: { required },
   date: { required }
 };
@@ -208,15 +213,23 @@ async function saveTransaction() {
     // Convert amount to number
     let amount = parseFloat(transaction.value.amount as any);
     
-    // Make amount negative for expenses (except Income category)
-    if (transaction.value.category !== 'Income') {
+    // Get the selected account
+    const selectedAccount = accounts.value.find(a => a.id === transaction.value.accountId);
+    const accountType = selectedAccount?.type?.toLowerCase() || '';
+    
+    // Determine sign based on transaction type and account type
+    if (transaction.value.type === 'expense') {
+      // For expenses, amount should be negative
       amount = -Math.abs(amount);
+    } else {
+      // For income, amount should be positive
+      amount = Math.abs(amount);
     }
     
     // Create transaction object
     const newTransaction: Partial<Transaction> = {
       amount,
-      vendor: transaction.value.vendor,
+      type: transaction.value.type,
       category: transaction.value.category,
       description: transaction.value.description,
       date: transaction.value.date,
@@ -232,7 +245,7 @@ async function saveTransaction() {
     // Reset form
     transaction.value = {
       amount: '',
-      vendor: '',
+      type: 'expense',
       category: '',
       description: '',
       date: new Date(),

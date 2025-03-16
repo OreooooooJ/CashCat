@@ -1,0 +1,18 @@
+Date,Description,Card Member,Account #,Amount,Category
+11/10/2024,DIRECT DEPOSIT - EMPLOYER,testerFirstName testerLastName,-12345,10000.00,Income
+11/14/2024,INTER-ACCOUNT TRANSFER IN (Savings),testerFirstName testerLastName,-12345,400.00,Transfer
+11/20/2024,UTILITY BILL PAYMENT - GAS,testerFirstName testerLastName,-12345,-120.00,Utilities
+12/10/2024,INTER-ACCOUNT TRANSFER OUT (To Savings),testerFirstName testerLastName,-12345,-350.00,Transfer
+12/15/2024,UTILITY BILL PAYMENT - ELECTRIC,testerFirstName testerLastName,-12345,-160.00,Utilities
+12/20/2024,RENT INCOME DEPOSIT,testerFirstName testerLastName,-12345,1200.00,Income
+01/08/2025,INTER-ACCOUNT TRANSFER IN (Savings),testerFirstName testerLastName,-12345,500.00,Transfer
+01/15/2025,UTILITY BILL PAYMENT - WATER,testerFirstName testerLastName,-12345,-110.00,Utilities
+01/20/2025,CAR INSURANCE PAYMENT,testerFirstName testerLastName,-12345,-220.00,Insurance
+02/15/2025,HOME MORTGAGE PAYMENT,testerFirstName testerLastName,-12345,-2000.00,Housing
+02/20/2025,UTILITY BILL PAYMENT - ELECTRIC,testerFirstName testerLastName,-12345,-150.00,Utilities
+02/25/2025,GROCERY STORE PURCHASE,testerFirstName testerLastName,-12345,-250.00,Groceries
+02/26/2025,INTER-ACCOUNT TRANSFER IN (Savings),testerFirstName testerLastName,-12345,500.00,Transfer
+02/27/2025,RENT INCOME DEPOSIT,testerFirstName testerLastName,-12345,1200.00,Income
+02/28/2025,DIRECT DEPOSIT - EMPLOYER,testerFirstName testerLastName,-12345,10000.00,Income
+02/12/2025,INTER-ACCOUNT TRANSFER OUT (To Savings),testerFirstName testerLastName,-12345,-300.00,Transfer
+

@@ -21,7 +21,7 @@ CashCat is a modern, full-stack personal finance management application built wi
 - **Chart.js**: Data visualization
 - **Vee-Validate**: Form validation
 
-### Backend
+### Server
 - **Express.js**: Node.js web application framework
 - **TypeScript**: Type-safe JavaScript
 - **Prisma**: ORM for database access
@@ -53,23 +53,70 @@ CashCat is a modern, full-stack personal finance management application built wi
 │   ├── vitest.setup.ts     # Test setup
 │   └── vite.config.ts      # Vite configuration
 │
-├── server/                  # Backend code (Express.js)
+├── server/                  # Server code (Express.js)
 │   ├── src/
 │   │   ├── routes/         # Route definitions
 │   │   ├── middlewares/    # Express middlewares
 │   │   ├── services/       # Service layer
 │   │   └── app.ts          # Express app
-│   ├── tests/              # Backend tests
+│   ├── tests/              # Server tests
 │   └── prisma/             # Prisma schema and migrations
 │
 └── shared/                 # Shared code
     └── types/             # Shared type definitions
 ```
 
+## How to Run
+
+This project uses Yarn Workspaces to manage multiple packages in a monorepo structure.
+
+### Project Structure
+- `client/`: Vue.js frontend application
+- `server/`: Express.js backend API
+- `shared-types/`: Shared TypeScript types
+
+### Installation
+```bash
+# Install all dependencies for all workspaces
+yarn install
+```
+
+### Development
+```bash
+# Run both client and server in development mode
+yarn dev
+
+# Run only the client
+yarn workspace client dev
+# Or using the shorthand
+yarn dev:client
+
+# Run only the server
+yarn workspace server dev
+# Or using the shorthand
+yarn dev:server
+```
+
+### Building
+```bash
+# Build all workspaces
+yarn build
+
+# Build individual workspaces
+yarn workspace client build
+yarn workspace server build
+yarn workspace shared-types build
+
+# Or using the shorthands
+yarn build:client
+yarn build:server
+yarn build:shared
+```
+
 ## Development Setup
 
 ### Prerequisites
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - Yarn (v4.1.1 or higher)
 - PostgreSQL (for production)
 
@@ -102,9 +149,9 @@ CashCat is a modern, full-stack personal finance management application built wi
    yarn dev
    ```
 
-   This will start both the frontend and backend servers:
+   This will start both the frontend and server:
    - Frontend: http://localhost:5173
-   - Backend: http://localhost:3000
+   - Server: http://localhost:3000
 
 ## Testing
 

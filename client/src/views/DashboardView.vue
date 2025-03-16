@@ -23,6 +23,11 @@
       />
     </div>
 
+    <!-- Debug Refresh Button -->
+    <button class="debug-refresh" @click="refreshTransactions">
+      Refresh Transactions
+    </button>
+
     <!-- Add Transaction FAB -->
     <button class="fab" @click="openTransactionForm">
       <PlusIcon class="w-6 h-6" />
@@ -45,7 +50,7 @@
           >
             <DialogPanel class="modal-panel">
               <DialogTitle as="h3" class="modal-title">Add Transaction</DialogTitle>
-              <TransactionEntryView @save="onTransactionAdded" @close="closeTransactionForm" />
+              <TransactionEntryForm @save="onTransactionAdded" @close="closeTransactionForm" />
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -63,20 +68,22 @@ import CashFlowOverview from '../components/dashboard/CashFlowOverview.vue'
 import SpendingChart from '../components/dashboard/SpendingChart.vue'
 import RecentTransactions from '../components/dashboard/RecentTransactions.vue'
 import BudgetManager from '../components/dashboard/BudgetManager.vue'
-import TransactionEntryView from './TransactionEntryView.vue'
-import { getMockData, categoryColors } from '../services/mockData'
+import TransactionEntryForm from '../components/TransactionEntryForm.vue'
+import { categoryColors } from '../services/mockData'
 import type { Transaction } from '../types/transaction'
-import type { Account } from '../services/mockData'
+import type { Account } from '../types/account'
 import { useTransactionStore } from '../stores/transaction'
+import { useAccountStore } from '../stores/account'
 
 // State
 const isModalOpen = ref(false)
 const transactionStore = useTransactionStore()
-const accounts = ref<Account[]>([])
+const accountStore = useAccountStore()
+const accounts = computed(() => accountStore.accounts)
 
 // Computed values
-const totalIncome = computed(() => transactionStore.totalIncome())
-const totalExpenses = computed(() => transactionStore.totalExpenses())
+const totalIncome = computed(() => transactionStore.calculateTotalIncome())
+const totalExpenses = computed(() => transactionStore.calculateTotalExpenses())
 
 const spendingByCategory = computed(() => {
   return transactionStore.getSpendingByCategory().map(({ category, amount }) => ({
@@ -107,10 +114,14 @@ const onTransactionAdded = async (transaction: Transaction) => {
   }
 }
 
+const refreshTransactions = async () => {
+  await transactionStore.fetchTransactions()
+}
+
 // Load initial data
 onMounted(async () => {
-  const { accounts: mockAccounts } = getMockData()
-  accounts.value = mockAccounts
+  // Fetch real account data from API
+  await accountStore.fetchAccounts()
   
   // Fetch real transaction data from API
   await transactionStore.fetchTransactions()
@@ -182,27 +193,34 @@ onMounted(async () => {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: #14b8a6;
+  background-color: #3b82f6;
   color: white;
-  border: none;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
-  transition:
-    transform 0.2s,
-    background-color 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.fab:hover {
-  transform: scale(1.05);
-  background: #0d9488;
+.debug-refresh {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #ef4444;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.fab:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.4);
+.debug-refresh:hover {
+  background-color: #dc2626;
 }
 
 /* Modal Styles */

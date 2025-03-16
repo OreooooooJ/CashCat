@@ -1,5 +1,13 @@
 import { PrismaClient } from '@prisma/client'
-import type { Expense } from '../../../shared/types/expense'
+
+interface Expense {
+  id?: string
+  amount: number
+  category: string
+  note?: string
+  date: Date
+  userId: string
+}
 
 const prisma = new PrismaClient()
 
@@ -27,7 +35,7 @@ export const expenseService = {
       },
     })
 
-    return transactions.map(transaction => ({
+    return transactions.map((transaction: any) => ({
       id: transaction.id,
       amount: transaction.amount,
       category: transaction.category,

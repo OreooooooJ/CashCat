@@ -1,3 +1,10 @@
+/**
+ * DEVELOPMENT/TESTING ONLY
+ * 
+ * This file contains mock budget data for development and testing purposes.
+ * It should not be imported in production code.
+ */
+
 import type { Budget } from '@/types/budget'
 
 export interface BudgetSummary {

@@ -1,0 +1,17 @@
+Date,Description,Card Member,Account #,Amount,Category
+11/10/2024,DIRECT DEPOSIT - EMPLOYER,testerFirstName testerLastName,-67890,10000.00,Income
+11/12/2024,INTER-ACCOUNT TRANSFER OUT (To Savings),testerFirstName testerLastName,-67890,-450.00,Transfer
+11/20/2024,GROCERY STORE PURCHASE,testerFirstName testerLastName,-67890,-280.00,Groceries
+12/03/2024,CAR INSURANCE PAYMENT,testerFirstName testerLastName,-67890,-210.00,Insurance
+12/10/2024,INTER-ACCOUNT TRANSFER IN (From Savings),testerFirstName testerLastName,-67890,350.00,Transfer
+12/18/2024,DINING AT RESTAURANT,testerFirstName testerLastName,-67890,-160.00,Dining
+01/05/2025,RENT INCOME DEPOSIT,testerFirstName testerLastName,-67890,1200.00,Income
+01/12/2025,UTILITY BILL PAYMENT - ELECTRIC,testerFirstName testerLastName,-67890,-140.00,Utilities
+01/20/2025,INTER-ACCOUNT TRANSFER OUT (To Savings),testerFirstName testerLastName,-67890,-500.00,Transfer
+02/12/2025,DINING AT RESTAURANT,testerFirstName testerLastName,-67890,-150.00,Dining
+02/15/2025,GROCERY STORE PURCHASE,testerFirstName testerLastName,-67890,-300.00,Groceries
+02/20/2025,RENT INCOME DEPOSIT,testerFirstName testerLastName,-67890,1200.00,Income
+02/24/2025,INTER-ACCOUNT TRANSFER OUT (To Savings),testerFirstName testerLastName,-67890,-400.00,Transfer
+02/23/2025,INTER-ACCOUNT TRANSFER IN (From Savings),testerFirstName testerLastName,-67890,300.00,Transfer
+02/27/2025,HOME MORTGAGE PAYMENT,testerFirstName testerLastName,-67890,-2000.00,Housing
+02/28/2025,DIRECT DEPOSIT - EMPLOYER,testerFirstName testerLastName,-67890,10000.00,Income

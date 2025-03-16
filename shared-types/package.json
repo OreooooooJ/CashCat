@@ -1,0 +1,14 @@
+{
+  "name": "shared-types",
+  "version": "1.0.0",
+  "description": "Shared types for CashCat",
+  "main": "index.js",
+  "types": "types/index.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

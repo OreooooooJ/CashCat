@@ -31,15 +31,15 @@ const incomeCategories = [
   'Other'
 ];
 
-// Define transaction type
-type Transaction = {
+// Define transaction interface
+interface Transaction {
   amount: number;
   type: string;
   category: string;
   description: string;
   date: Date;
   userId: string;
-};
+}
 
 // Descriptions for expenses by category
 const expenseDescriptions: Record<string, string[]> = {

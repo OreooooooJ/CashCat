@@ -14,5 +14,17 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     open: true, // This will automatically open the browser
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false
+      },
+      '/auth': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
 });

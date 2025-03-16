@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import axios from 'axios';
+import api from '@/utils/api';
 
 const emit = defineEmits(['login-success']);
 
@@ -62,8 +62,26 @@ const handleLogin = async () => {
   isLoading.value = true;
   
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth/login`,
+    // AUTHENTICATION TEMPORARILY DISABLED
+    // Instead of making a real login request, we'll simulate a successful login
+    
+    // Create a fake user for development
+    const fakeUser = {
+      id: "test-user-id",
+      email: "test@example.com",
+      name: "Test User"
+    };
+    
+    // Store fake token and user info
+    localStorage.setItem('token', 'fake-test-token');
+    localStorage.setItem('user', JSON.stringify(fakeUser));
+    
+    // Emit success event
+    emit('login-success', fakeUser);
+    
+    /* Original login logic:
+    const response = await api.post(
+      '/auth/login',
       {
         email: email.value,
         password: password.value
@@ -76,6 +94,7 @@ const handleLogin = async () => {
     
     // Emit success event
     emit('login-success', response.data.user);
+    */
   } catch (err: any) {
     if (err.response?.data?.error) {
       error.value = err.response.data.error;

@@ -7,4 +7,5 @@ alwaysApply: true
 # Your rule content
 
 - use yarn whenever possible
-- always check if in correct directory first before running commands
+- Always execute `codebase_search` in `/Users/easonj/CursorProject/CashCat` **before** creating or modifying any files. If no relevant results are found, verify manually before proceeding.
+- please don't restart the dev server, as most of time it is already running. You can check the status before restart the dev server. 

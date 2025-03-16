@@ -12,7 +12,9 @@ async function main() {
     
     const user = await prisma.user.upsert({
       where: { email: 'test@example.com' },
-      update: {},
+      update: {
+        password: hashedPassword
+      },
       create: {
         email: 'test@example.com',
         name: 'Test User',
@@ -21,6 +23,53 @@ async function main() {
     });
 
     console.log(`Created user: ${user.name} (${user.email})`);
+
+    // Create accounts
+    const accountData = [
+      {
+        name: 'Checking Account',
+        type: 'checking',
+        balance: 5000,
+        institution: 'Bank of America',
+        lastFour: '1234',
+        color: '#10B981', // Green
+        userId: user.id,
+      },
+      {
+        name: 'Savings Account',
+        type: 'savings',
+        balance: 10000,
+        institution: 'Bank of America',
+        lastFour: '5678',
+        color: '#3B82F6', // Blue
+        userId: user.id,
+      },
+      {
+        name: 'Credit Card',
+        type: 'credit',
+        balance: -1500,
+        institution: 'Chase',
+        lastFour: '9012',
+        color: '#EF4444', // Red
+        userId: user.id,
+      },
+    ];
+
+    // Clear existing accounts
+    await prisma.account.deleteMany({
+      where: { userId: user.id },
+    });
+
+    // Add new accounts
+    const createdAccounts = [];
+    for (const account of accountData) {
+      const createdAccount = await prisma.account.create({
+        data: account,
+      });
+      createdAccounts.push(createdAccount);
+    }
+
+    console.log(`Added ${accountData.length} accounts`);
 
     // Create transactions
     const transactionData = [
@@ -31,6 +80,7 @@ async function main() {
         description: 'Monthly Salary',
         date: new Date(2024, 2, 1), // March 1, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       {
         amount: -85.43,
@@ -39,6 +89,7 @@ async function main() {
         description: 'Grocery shopping',
         date: new Date(2024, 2, 5), // March 5, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       {
         amount: -45.99,
@@ -47,6 +98,7 @@ async function main() {
         description: 'Netflix subscription',
         date: new Date(2024, 2, 10), // March 10, 2024
         userId: user.id,
+        accountId: createdAccounts[2].id, // Credit card
       },
       {
         amount: -125.00,
@@ -55,6 +107,7 @@ async function main() {
         description: 'Electricity bill',
         date: new Date(2024, 2, 15), // March 15, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       {
         amount: -32.50,
@@ -63,6 +116,7 @@ async function main() {
         description: 'Gas',
         date: new Date(2024, 2, 20), // March 20, 2024
         userId: user.id,
+        accountId: createdAccounts[2].id, // Credit card
       },
       {
         amount: 250.00,
@@ -71,6 +125,7 @@ async function main() {
         description: 'Freelance work',
         date: new Date(2024, 2, 25), // March 25, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       // April transactions
       {
@@ -80,6 +135,7 @@ async function main() {
         description: 'Monthly Salary',
         date: new Date(2024, 3, 1), // April 1, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       {
         amount: -92.17,
@@ -88,6 +144,7 @@ async function main() {
         description: 'Grocery shopping',
         date: new Date(2024, 3, 5), // April 5, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       {
         amount: -45.99,
@@ -96,6 +153,7 @@ async function main() {
         description: 'Netflix subscription',
         date: new Date(2024, 3, 10), // April 10, 2024
         userId: user.id,
+        accountId: createdAccounts[2].id, // Credit card
       },
       {
         amount: -130.00,
@@ -104,6 +162,7 @@ async function main() {
         description: 'Electricity bill',
         date: new Date(2024, 3, 15), // April 15, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
       {
         amount: -35.75,
@@ -112,6 +171,7 @@ async function main() {
         description: 'Gas',
         date: new Date(2024, 3, 20), // April 20, 2024
         userId: user.id,
+        accountId: createdAccounts[2].id, // Credit card
       },
       {
         amount: 300.00,
@@ -120,6 +180,7 @@ async function main() {
         description: 'Freelance work',
         date: new Date(2024, 3, 25), // April 25, 2024
         userId: user.id,
+        accountId: createdAccounts[0].id, // Checking account
       },
     ];
 
