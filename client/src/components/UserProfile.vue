@@ -8,7 +8,7 @@
     
     <div v-else-if="error" class="error">
       <p>{{ error }}</p>
-      <button @click="fetchProfile" class="retry-button">Retry</button>
+      <button class="retry-button" @click="fetchProfile">Retry</button>
     </div>
     
     <div v-else class="profile-content">
@@ -35,7 +35,7 @@
             <span class="value">{{ profile.budgetCount }}</span>
           </div>
         </div>
-        <button @click="startEditing" class="edit-button">Edit Profile</button>
+        <button class="edit-button" @click="startEditing">Edit Profile</button>
       </div>
       
       <form v-else class="profile-form" @submit.prevent="updateProfile">
@@ -84,7 +84,7 @@
           <button type="submit" class="save-button" :disabled="updateLoading">
             {{ updateLoading ? 'Saving...' : 'Save Changes' }}
           </button>
-          <button type="button" @click="cancelEditing" class="cancel-button">Cancel</button>
+          <button type="button" class="cancel-button" @click="cancelEditing">Cancel</button>
         </div>
         
         <div v-if="updateError" class="update-error">

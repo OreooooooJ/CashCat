@@ -1,275 +1,373 @@
 <template>
-  <form @submit.prevent="onSubmit" class="transaction-form">
-    <div class="form-group">
-      <label for="amount">Amount</label>
-      <div class="amount-input">
-        <span class="currency-symbol">$</span>
-        <input
-          id="amount"
-          v-model="amount"
-          type="text"
-          required
-          @input="formatAmount"
-          :class="{ 'has-error': v$.amount.$error }"
-        />
+  <div class="transaction-entry">
+    <h1 class="text-2xl font-bold mb-6">Add Transaction</h1>
+    
+    <form class="transaction-form" @submit.prevent="saveTransaction">
+      <div class="form-group">
+        <label for="amount">Amount</label>
+        <div class="amount-input">
+          <span class="currency-symbol">$</span>
+          <input
+            id="amount"
+            v-model="transaction.amount"
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+            required
+            @input="formatAmount"
+          />
+        </div>
+        <div v-if="v$.amount.$error" class="error-message">
+          {{ v$.amount.$errors[0].$message }}
+        </div>
       </div>
-      <span v-if="v$.amount.$error" class="error-message">
-        Please enter a valid amount
-      </span>
+      
+      <div class="form-group">
+        <label for="vendor">Vendor</label>
+        <input
+          id="vendor"
+          v-model="transaction.vendor"
+          type="text"
+          placeholder="Enter vendor name"
+          required
+        />
+        <div v-if="v$.vendor.$error" class="error-message">
+          {{ v$.vendor.$errors[0].$message }}
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select
+          id="category"
+          v-model="transaction.category"
+          required
+        >
+          <option value="" disabled>Select a category</option>
+          <option v-for="category in categories" :key="category" :value="category">
+            {{ category }}
+          </option>
+        </select>
+        <div v-if="v$.category.$error" class="error-message">
+          {{ v$.category.$errors[0].$message }}
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="account">Account</label>
+        <select
+          id="account"
+          v-model="transaction.accountId"
+        >
+          <option value="">None</option>
+          <option v-for="account in accounts" :key="account.id" :value="account.id">
+            {{ account.name }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Description (Optional)</label>
+        <textarea
+          id="description"
+          v-model="transaction.description"
+          placeholder="Add notes about this transaction"
+          rows="3"
+        ></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="date">Date</label>
+        <input
+          id="date"
+          v-model="dateString"
+          type="date"
+          required
+        />
+        <div v-if="v$.date.$error" class="error-message">
+          {{ v$.date.$errors[0].$message }}
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="save-button" :disabled="isSubmitting">
+          {{ isSubmitting ? 'Adding...' : 'Add Transaction' }}
+        </button>
+        <button type="button" class="cancel-button" @click="$emit('close')">
+          Cancel
+        </button>
+      </div>
+      
+      <div v-if="error" class="form-error">
+        {{ error }}
+      </div>
+    </form>
+    
+    <!-- Debug section -->
+    <div class="mt-8 p-4 bg-gray-100 rounded-lg">
+      <h3 class="text-lg font-semibold mb-2">Debug Info</h3>
+      <div class="text-sm">
+        <p><strong>Transaction Data:</strong> {{ JSON.stringify(transaction) }}</p>
+        <p><strong>Validation Errors:</strong> {{ v$.$errors.length > 0 ? JSON.stringify(v$.$errors) : 'None' }}</p>
+        <p><strong>Available Accounts:</strong> {{ accounts.length > 0 ? accounts.length + ' accounts' : 'No accounts' }}</p>
+        <div v-if="submitResult" class="mt-2 p-2 bg-blue-100 rounded">
+          <p><strong>Last Submit Result:</strong> {{ submitResult }}</p>
+        </div>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label for="vendor">Vendor</label>
-      <input
-        id="vendor"
-        v-model="vendor"
-        type="text"
-        required
-        :class="{ 'has-error': v$.vendor.$error }"
-      />
-      <span v-if="v$.vendor.$error" class="error-message">
-        Vendor name is required
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label for="category">Category</label>
-      <select
-        id="category"
-        v-model="category"
-        required
-        :class="{ 'has-error': v$.category.$error }"
-      >
-        <option value="">Select a category</option>
-        <option v-for="cat in categories" :key="cat" :value="cat">
-          {{ cat }}
-        </option>
-      </select>
-      <span v-if="v$.category.$error" class="error-message">
-        Please select a category
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label for="account">Account</label>
-      <select
-        id="account"
-        v-model="accountId"
-        required
-        :class="{ 'has-error': v$.accountId.$error }"
-      >
-        <option value="">Select an account</option>
-        <option v-for="account in accounts" :key="account.id" :value="account.id">
-          {{ account.name }}
-        </option>
-      </select>
-      <span v-if="v$.accountId.$error" class="error-message">
-        Please select an account
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label for="description">Description (Optional)</label>
-      <textarea
-        id="description"
-        v-model="description"
-        rows="3"
-      />
-    </div>
-
-    <div class="form-actions">
-      <button type="button" class="cancel-btn" @click="$emit('close')">
-        Cancel
-      </button>
-      <button type="submit" class="submit-btn">
-        Add Transaction
-      </button>
-    </div>
-  </form>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useVuelidate } from '@vuelidate/core'
-import { required, helpers } from '@vuelidate/validators'
-import currency from 'currency.js'
-import { getMockData } from '../services/mockData'
-import type { Transaction } from '../types/transaction'
+import { ref, computed, onMounted } from 'vue';
+import { useVuelidate } from '@vuelidate/core';
+import { required, minValue } from '@vuelidate/validators';
+import { useTransactionStore } from '@/stores/transaction';
+import { useAccountStore } from '@/stores/account';
+import type { Transaction } from '@/types/transaction';
 
-const emit = defineEmits<{
-  (e: 'save', transaction: Transaction): void
-  (e: 'close'): void
-}>()
+const emit = defineEmits(['save', 'close']);
+
+const transactionStore = useTransactionStore();
+const accountStore = useAccountStore();
+const accounts = ref(accountStore.accounts);
+
+// Debug state
+const submitResult = ref('');
 
 // Form state
-const amount = ref('')
-const vendor = ref('')
-const category = ref('')
-const accountId = ref('')
-const description = ref('')
+const transaction = ref({
+  amount: '',
+  vendor: '',
+  category: '',
+  description: '',
+  date: new Date(),
+  accountId: ''
+});
 
-// Get accounts for the dropdown
-const { accounts } = getMockData()
+const isSubmitting = ref(false);
+const error = ref('');
+
+// Format date for input
+const dateString = computed({
+  get: () => {
+    const date = transaction.value.date;
+    return date.toISOString().split('T')[0];
+  },
+  set: (value: string) => {
+    transaction.value.date = new Date(value);
+  }
+});
 
 // Available categories
 const categories = [
   'Income',
-  'Bills & Utilities',
   'Food & Dining',
-  'Transportation',
   'Shopping',
+  'Transportation',
+  'Bills & Utilities',
   'Entertainment',
   'Health & Fitness',
   'Travel',
+  'Education',
+  'Personal Care',
+  'Gifts & Donations',
+  'Investments',
   'Other'
-]
+];
 
 // Validation rules
 const rules = {
-  amount: { required, validAmount: helpers.withMessage('Invalid amount', (value: string) => {
-    if (!value) return false
-    const numericValue = currency(value.replace(/[^\d.-]/g, '')).value
-    return !isNaN(numericValue) && numericValue !== 0
-  })},
+  amount: { required, minValue: minValue(0.01) },
   vendor: { required },
   category: { required },
-  accountId: { required }
-}
+  date: { required }
+};
 
-const v$ = useVuelidate(rules, {
-  amount,
-  vendor,
-  category,
-  accountId
-})
+const v$ = useVuelidate(rules, transaction);
 
 // Format amount as currency
-const formatAmount = (event: Event) => {
-  const input = (event.target as HTMLInputElement).value.replace(/[^\d.-]/g, '')
-  if (input) {
-    amount.value = currency(input, { symbol: '' }).format()
-  } else {
-    amount.value = ''
+function formatAmount() {
+  // Ensure amount is a valid number
+  const amount = parseFloat(transaction.value.amount as any);
+  if (!isNaN(amount)) {
+    transaction.value.amount = amount.toFixed(2);
   }
 }
 
-// Form submission
-const onSubmit = async () => {
-  const isValid = await v$.value.$validate()
-  if (!isValid) return
-
-  const numericAmount = currency(amount.value).value
-
-  const transaction: Transaction = {
-    id: `t${Date.now()}`,
-    amount: numericAmount,
-    vendor: vendor.value,
-    category: category.value,
-    date: new Date(),
-    accountId: accountId.value,
-    description: description.value || undefined,
-    isAutoCategorized: false
+// Save transaction
+async function saveTransaction() {
+  const result = await v$.value.$validate();
+  if (!result) return;
+  
+  isSubmitting.value = true;
+  error.value = '';
+  submitResult.value = '';
+  
+  try {
+    // Convert amount to number
+    let amount = parseFloat(transaction.value.amount as any);
+    
+    // Make amount negative for expenses (except Income category)
+    if (transaction.value.category !== 'Income') {
+      amount = -Math.abs(amount);
+    }
+    
+    // Create transaction object
+    const newTransaction: Partial<Transaction> = {
+      amount,
+      vendor: transaction.value.vendor,
+      category: transaction.value.category,
+      description: transaction.value.description,
+      date: transaction.value.date,
+      accountId: transaction.value.accountId || undefined
+    };
+    
+    // Save transaction
+    const savedTransaction = await transactionStore.addTransaction(newTransaction as any);
+    
+    // Debug info
+    submitResult.value = `Transaction saved successfully with ID: ${savedTransaction.id}`;
+    
+    // Reset form
+    transaction.value = {
+      amount: '',
+      vendor: '',
+      category: '',
+      description: '',
+      date: new Date(),
+      accountId: ''
+    };
+    
+    // Reset validation
+    v$.value.$reset();
+    
+    // Emit save event
+    emit('save', savedTransaction);
+  } catch (err) {
+    console.error('Error saving transaction:', err);
+    error.value = err instanceof Error ? err.message : 'Failed to save transaction';
+    submitResult.value = `Error: ${error.value}`;
+  } finally {
+    isSubmitting.value = false;
   }
-
-  emit('save', transaction)
 }
+
+onMounted(async () => {
+  // Fetch accounts
+  try {
+    await accountStore.fetchAccounts();
+    accounts.value = accountStore.accounts;
+  } catch (err) {
+    console.error('Error fetching accounts:', err);
+  }
+});
 </script>
 
 <style scoped>
+.transaction-entry {
+  padding: 1.5rem;
+}
+
 .transaction-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 label {
+  display: block;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .amount-input {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .currency-symbol {
   position: absolute;
   left: 0.75rem;
+  top: 0.75rem;
   color: #6b7280;
 }
 
-input[type="text"],
-select,
-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-input[id="amount"] {
-  padding-left: 1.75rem;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: #14b8a6;
-  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.1);
-}
-
-.has-error {
-  border-color: #dc2626;
-}
-
-.error-message {
-  color: #dc2626;
-  font-size: 0.875rem;
+.amount-input input {
+  padding-left: 1.5rem;
 }
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
-.cancel-btn,
-.submit-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-size: 1rem;
+.save-button {
+  flex: 1;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.cancel-btn {
+.save-button:hover {
+  background: #2563eb;
+}
+
+.save-button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  flex: 1;
   background: #f3f4f6;
+  color: #4b5563;
   border: 1px solid #d1d5db;
-  color: #374151;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-.cancel-btn:hover {
+.cancel-button:hover {
   background: #e5e7eb;
 }
 
-.submit-btn {
-  background: #14b8a6;
-  border: none;
-  color: white;
+.error-message {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
 }
 
-.submit-btn:hover {
-  background: #0d9488;
+.form-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+  font-size: 0.875rem;
 }
 </style>

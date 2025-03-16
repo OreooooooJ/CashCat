@@ -18,9 +18,9 @@ class CategorizationService {
   private loadRules(): void {
     const savedRules = localStorage.getItem('categorizationRules')
     if (savedRules) {
-      this.rules = JSON.parse(savedRules).map((rule: any) => ({
+      this.rules = JSON.parse(savedRules).map((rule: Partial<CategorizationRule>) => ({
         ...rule,
-        lastUsed: new Date(rule.lastUsed),
+        lastUsed: new Date(rule.lastUsed || Date.now()),
       }))
     }
   }

@@ -15,6 +15,20 @@ export default [
       'build/**',
     ],
   },
+  // Configuration for JavaScript configuration files
+  {
+    files: ['**/*.config.js', '**/.eslintrc.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        module: 'writable',
+        process: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -80,6 +94,7 @@ export default [
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+      'no-misleading-character-class': 'off',
     },
   },
 ]; 

@@ -23,8 +23,8 @@
       ]"
     >
       <component
-        v-if="icon"
         :is="icon"
+        v-if="icon"
         class="flex-shrink-0 transition-all duration-200"
         :class="[
           isActive ? 'w-6 h-6' : 'w-5 h-5',

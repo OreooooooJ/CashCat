@@ -4,14 +4,14 @@
       <h3>Cash Flow Overview</h3>
       <div class="time-period-selector">
         <button 
-          @click="timePeriod = 'monthly'" 
-          :class="{ active: timePeriod === 'monthly' }"
+          :class="{ active: timePeriod === 'monthly' }" 
+          @click="timePeriod = 'monthly'"
         >
           Monthly
         </button>
         <button 
-          @click="timePeriod = 'yearly'" 
-          :class="{ active: timePeriod === 'yearly' }"
+          :class="{ active: timePeriod === 'yearly' }" 
+          @click="timePeriod = 'yearly'"
         >
           Yearly
         </button>
@@ -89,56 +89,58 @@ const currentYear = now.getFullYear()
 
 // Helper function to group transactions by period
 const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod = false) => {
+  console.log('Grouping transactions by period:', isPreviousPeriod ? 'previous' : 'current');
+  
   const result = {
     income: 0,
     expenses: 0
   }
 
   transactions.forEach(transaction => {
-    const transactionDate = new Date(transaction.date)
-    const transactionMonth = transactionDate.getMonth()
-    const transactionYear = transactionDate.getFullYear()
-    
-    let isInPeriod = false
-    
-    if (timePeriod.value === 'monthly') {
-      // For current period: current month and year
-      // For previous period: previous month (or December of previous year)
-      if (isPreviousPeriod) {
-        isInPeriod = (currentMonth === 0) 
-          ? (transactionMonth === 11 && transactionYear === currentYear - 1)
-          : (transactionMonth === currentMonth - 1 && transactionYear === currentYear)
-      } else {
-        isInPeriod = transactionMonth === currentMonth && transactionYear === currentYear
-      }
-    } else { // yearly
-      // For current period: current year
-      // For previous period: previous year
-      isInPeriod = transactionYear === (isPreviousPeriod ? currentYear - 1 : currentYear)
+    if (!transaction.date) {
+      return;
     }
     
-    if (isInPeriod) {
-      if (transaction.amount > 0) {
-        result.income += transaction.amount
-      } else {
-        result.expenses += Math.abs(transaction.amount)
-      }
+    // Process all transactions regardless of date
+    if (transaction.amount > 0) {
+      result.income += transaction.amount;
+    } else {
+      result.expenses += Math.abs(transaction.amount);
     }
-  })
+  });
   
-  return result
+  return result;
 }
 
 // Calculate current period totals
-const currentPeriodData = computed(() => groupTransactionsByPeriod(transactionStore.transactions))
+const currentPeriodData = computed(() => {
+  console.log('Calculating current period data with', transactionStore.transactions.length, 'transactions');
+  const result = groupTransactionsByPeriod(transactionStore.transactions);
+  console.log('Current period data:', result);
+  return result;
+})
 
 // Calculate previous period totals
-const previousPeriodData = computed(() => groupTransactionsByPeriod(transactionStore.transactions, true))
+const previousPeriodData = computed(() => {
+  console.log('Calculating previous period data with', transactionStore.transactions.length, 'transactions');
+  const result = groupTransactionsByPeriod(transactionStore.transactions, true);
+  console.log('Previous period data:', result);
+  return result;
+})
 
 // Current period values
-const totalIncome = computed(() => currentPeriodData.value.income)
-const totalExpenses = computed(() => currentPeriodData.value.expenses)
-const netCashFlow = computed(() => totalIncome.value - totalExpenses.value)
+const totalIncome = computed(() => {
+  console.log('Total income computed:', currentPeriodData.value.income);
+  return currentPeriodData.value.income;
+})
+const totalExpenses = computed(() => {
+  console.log('Total expenses computed:', currentPeriodData.value.expenses);
+  return currentPeriodData.value.expenses;
+})
+const netCashFlow = computed(() => {
+  console.log('Net cash flow computed:', totalIncome.value - totalExpenses.value);
+  return totalIncome.value - totalExpenses.value;
+})
 
 // Calculate trends (percentage change from previous period)
 const calculateTrend = (current: number, previous: number) => {
@@ -322,6 +324,14 @@ watch(timePeriod, () => {
 // Initialize chart on mount
 onMounted(() => {
   initChart()
+  
+  // Fetch transactions if they haven't been loaded yet
+  if (transactionStore.transactions.length === 0) {
+    console.log('No transactions found, fetching from API...');
+    transactionStore.fetchTransactions();
+  } else {
+    console.log('Transactions already loaded:', transactionStore.transactions.length);
+  }
 })
 </script>
 

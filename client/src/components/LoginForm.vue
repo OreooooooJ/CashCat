@@ -39,7 +39,7 @@
     
     <div class="demo-login">
       <p>Demo Account:</p>
-      <button @click="fillDemoCredentials" class="demo-button">
+      <button class="demo-button" @click="fillDemoCredentials">
         Use Demo Credentials
       </button>
     </div>

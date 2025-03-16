@@ -21,9 +21,9 @@
       </router-link>
       
       <button
-        @click="toggleCollapse"
         class="p-2 rounded-full bg-opacity-20 hover:bg-opacity-30 transition-all duration-200"
         :class="isDarkMode ? 'bg-gray-600' : 'bg-mint-light'"
+        @click="toggleCollapse"
       >
         <ChevronLeftIcon v-if="!isCollapsed" class="w-5 h-5 text-white" />
         <ChevronRightIcon v-else class="w-5 h-5 text-white" />
@@ -73,9 +73,9 @@
         <transition name="fade">
           <button 
             v-if="!isCollapsed" 
-            @click.stop="logout" 
-            class="hover:text-white transition-colors"
+            class="hover:text-white transition-colors" 
             :class="isDarkMode ? 'text-gray-400' : 'text-mint-light'"
+            @click.stop="logout"
           >
             <ArrowRightOnRectangleIcon class="w-5 h-5" />
           </button>
@@ -110,7 +110,8 @@ import {
   HomeIcon,
   CurrencyDollarIcon,
   ChartBarIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  CreditCardIcon
 } from '@heroicons/vue/24/outline'
 import { useSidebarStore } from '@/stores/sidebar'
 import { useRouter } from 'vue-router'
@@ -177,6 +178,11 @@ const navigationItems: NavItem[] = [
     name: 'Dashboard',
     path: '/dashboard',
     icon: HomeIcon
+  },
+  {
+    name: 'Accounts',
+    path: '/accounts',
+    icon: CreditCardIcon
   },
   {
     name: 'Transactions',
