@@ -8,12 +8,14 @@ export const useThemeStore = defineStore('theme', () => {
   // Initialize on client-side only
   if (typeof window !== 'undefined') {
     // Check localStorage first
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme) {
-      isDarkMode.value = storedTheme === 'dark';
-    } else {
-      // If no stored preference, check system preference
-      isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (typeof localStorage !== 'undefined') {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme) {
+        isDarkMode.value = storedTheme === 'dark';
+      } else {
+        // If no stored preference, check system preference
+        isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
     }
     
     // Apply initial theme
@@ -25,7 +27,7 @@ export const useThemeStore = defineStore('theme', () => {
     isDarkMode.value = !isDarkMode.value;
     
     // Save preference to localStorage
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light');
       applyTheme();
     }

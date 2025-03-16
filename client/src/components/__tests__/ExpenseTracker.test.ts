@@ -2,13 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import ExpenseTracker from '../ExpenseTracker.vue'
 import { expenseService } from '../../services/expenseService'
-import type { Expense } from '../../types/expense'
+import type { Transaction } from '../../types/transaction'
 
 // Mock the expense service
 vi.mock('../../services/expenseService', () => ({
   expenseService: {
-    addExpense: vi.fn(),
-    getExpenses: vi.fn(),
+    addTransaction: vi.fn(),
+    getTransactions: vi.fn(),
   },
 }))
 
@@ -16,7 +16,7 @@ describe('ExpenseTracker', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Initialize with empty expenses by default
-    ;(expenseService.getExpenses as any).mockResolvedValue([])
+    ;(expenseService.getTransactions as any).mockResolvedValue([])
   })
 
   it('renders the form and expenses list', async () => {
@@ -40,7 +40,7 @@ describe('ExpenseTracker', () => {
     const promise = new Promise(resolve => {
       resolvePromise = resolve
     })
-    ;(expenseService.getExpenses as any).mockReturnValue(promise)
+    ;(expenseService.getTransactions as any).mockReturnValue(promise)
 
     const wrapper = mount(ExpenseTracker)
     await wrapper.vm.$nextTick()
@@ -53,7 +53,7 @@ describe('ExpenseTracker', () => {
   })
 
   it('shows empty state when no expenses exist', async () => {
-    ;(expenseService.getExpenses as any).mockResolvedValue([])
+    ;(expenseService.getTransactions as any).mockResolvedValue([])
     const wrapper = mount(ExpenseTracker)
 
     await flushPromises()
@@ -71,21 +71,21 @@ describe('ExpenseTracker', () => {
     await wrapper.find('select#category').setValue('food')
 
     // Mock successful expense addition
-    ;(expenseService.addExpense as any).mockResolvedValueOnce('new-expense-id')
+    ;(expenseService.addTransaction as any).mockResolvedValueOnce({ id: 'new-expense-id' })
 
     // Submit the form
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
     // Verify service was called with correct data
-    expect(expenseService.addExpense).toHaveBeenCalledWith(
+    expect(expenseService.addTransaction).toHaveBeenCalledWith(
       expect.objectContaining({
         amount: 42.5,
         description: 'Test expense',
         category: 'food',
         date: expect.any(Date),
-      }),
-      undefined
+        type: 'expense'
+      })
     )
 
     // Verify form was reset
@@ -99,17 +99,18 @@ describe('ExpenseTracker', () => {
   })
 
   it('displays expenses from the service', async () => {
-    const mockExpenses = [
+    const mockTransactions = [
       {
         id: '1',
         amount: 42.5,
         description: 'Test expense',
         category: 'food',
         date: new Date('2024-03-10'),
+        type: 'expense'
       },
     ]
 
-    ;(expenseService.getExpenses as any).mockResolvedValueOnce(mockExpenses)
+    ;(expenseService.getTransactions as any).mockResolvedValueOnce(mockTransactions)
 
     const wrapper = mount(ExpenseTracker)
     await flushPromises()
@@ -140,21 +141,21 @@ describe('ExpenseTracker', () => {
     await wrapper.find('select#category').setValue('food')
 
     // Mock successful expense addition
-    ;(expenseService.addExpense as any).mockResolvedValueOnce('new-expense-id')
+    ;(expenseService.addTransaction as any).mockResolvedValueOnce({ id: 'new-expense-id' })
 
     // Submit form
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    // Verify service was called with file
-    expect(expenseService.addExpense).toHaveBeenCalledWith(
+    // Verify service was called with correct data
+    expect(expenseService.addTransaction).toHaveBeenCalledWith(
       expect.objectContaining({
         amount: 50,
         description: 'Test with receipt',
         category: 'food',
         date: expect.any(Date),
-      }),
-      file
+        type: 'expense'
+      })
     )
   })
 })

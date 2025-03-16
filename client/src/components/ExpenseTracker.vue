@@ -46,9 +46,6 @@
             <span class="category">{{ expense.category }}</span>
             <span class="date">{{ formatDate(expense.date) }}</span>
           </div>
-          <a v-if="expense.receipt" :href="expense.receipt" target="_blank" class="receipt-link">
-            View Receipt
-          </a>
         </li>
       </ul>
     </div>
@@ -56,16 +53,22 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * DEVELOPMENT/TESTING ONLY
+ * 
+ * This component is used for development and testing purposes.
+ * It is not used in the production application.
+ */
 import { ref, onMounted } from 'vue'
-import type { Expense } from '../types/expense'
+import type { Transaction } from '../types/transaction'
 import { expenseService } from '../services/expenseService'
 
-const expenses = ref<Expense[]>([])
+const expenses = ref<Transaction[]>([])
 const loading = ref(false)
 const form = ref({
   amount: 0,
   description: '',
-  category: 'other' as Expense['category'],
+  category: 'other',
 })
 const receiptFile = ref<File | null>(null)
 
@@ -79,12 +82,13 @@ const handleFileChange = (event: Event) => {
 const handleSubmit = async () => {
   try {
     loading.value = true
-    const expense: Expense = {
+    const transaction: Omit<Transaction, 'id'> = {
       ...form.value,
       date: new Date(),
+      type: 'expense'
     }
 
-    await expenseService.addExpense(expense, receiptFile.value || undefined)
+    await expenseService.addTransaction(transaction)
 
     // Reset form
     form.value = {
@@ -106,7 +110,7 @@ const handleSubmit = async () => {
 const loadExpenses = async () => {
   try {
     loading.value = true
-    expenses.value = await expenseService.getExpenses()
+    expenses.value = await expenseService.getTransactions()
   } catch (error) {
     console.error('Error loading expenses:', error)
   } finally {

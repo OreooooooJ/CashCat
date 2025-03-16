@@ -90,25 +90,76 @@ const currentYear = now.getFullYear()
 // Helper function to group transactions by period
 const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod = false) => {
   console.log('Grouping transactions by period:', isPreviousPeriod ? 'previous' : 'current');
+  console.log('Total transactions to process:', transactions.length);
   
   const result = {
     income: 0,
     expenses: 0
   }
 
-  transactions.forEach(transaction => {
+  // Filter transactions by period
+  const filteredTransactions = transactions.filter(transaction => {
     if (!transaction.date) {
-      return;
+      console.log('Transaction missing date:', transaction);
+      return false;
     }
     
-    // Process all transactions regardless of date
-    if (transaction.amount > 0) {
-      result.income += transaction.amount;
+    const transactionDate = new Date(transaction.date);
+    const transactionMonth = transactionDate.getMonth();
+    const transactionYear = transactionDate.getFullYear();
+    
+    let include = false;
+    
+    if (timePeriod.value === 'monthly') {
+      // For monthly view
+      if (isPreviousPeriod) {
+        // Previous month
+        include = (transactionMonth === (currentMonth - 1 + 12) % 12) && 
+               (transactionMonth === 11 && currentMonth === 0 ? transactionYear === currentYear - 1 : transactionYear === currentYear);
+      } else {
+        // Current month
+        include = transactionMonth === currentMonth && transactionYear === currentYear;
+      }
     } else {
+      // For yearly view
+      if (isPreviousPeriod) {
+        // Previous year
+        include = transactionYear === currentYear - 1;
+      } else {
+        // Current year
+        include = transactionYear === currentYear;
+      }
+    }
+    
+    if (include) {
+      console.log(`Including transaction: ${transaction.description}, date: ${transactionDate.toISOString()}, type: ${transaction.type}, amount: ${transaction.amount}`);
+    }
+    
+    return include;
+  });
+  
+  console.log(`Found ${filteredTransactions.length} transactions for ${isPreviousPeriod ? 'previous' : 'current'} period`);
+  
+  // Log all filtered transactions for debugging
+  filteredTransactions.forEach((t, index) => {
+    console.log(`Transaction ${index + 1}: ${t.description}, type: ${t.type}, amount: ${t.amount}`);
+  });
+  
+  filteredTransactions.forEach(transaction => {
+    // Use transaction type to determine income or expense
+    const type = transaction.type ? transaction.type.toLowerCase() : '';
+    if (type === 'income') {
+      result.income += Math.abs(transaction.amount);
+      console.log(`Added to income: ${transaction.description}, amount: ${Math.abs(transaction.amount)}`);
+    } else if (type === 'expense') {
       result.expenses += Math.abs(transaction.amount);
+      console.log(`Added to expenses: ${transaction.description}, amount: ${Math.abs(transaction.amount)}`);
+    } else {
+      console.log('Unknown transaction type:', type, 'for transaction:', transaction.description);
     }
   });
   
+  console.log(`Period totals - Income: ${result.income}, Expenses: ${result.expenses}`);
   return result;
 }
 
@@ -196,9 +247,10 @@ const getHistoricalData = () => {
       const monthlyData = transactionStore.transactions.reduce((acc, transaction) => {
         const transactionDate = new Date(transaction.date)
         if (transactionDate.getMonth() === monthIndex && transactionDate.getFullYear() === year) {
-          if (transaction.amount > 0) {
-            acc.income += transaction.amount
-          } else {
+          const type = transaction.type ? transaction.type.toLowerCase() : '';
+          if (type === 'income') {
+            acc.income += Math.abs(transaction.amount)
+          } else if (type === 'expense') {
             acc.expenses += Math.abs(transaction.amount)
           }
         }
@@ -218,9 +270,10 @@ const getHistoricalData = () => {
       const monthlyData = transactionStore.transactions.reduce((acc, transaction) => {
         const transactionDate = new Date(transaction.date)
         if (transactionDate.getMonth() === i && transactionDate.getFullYear() === currentYear) {
-          if (transaction.amount > 0) {
-            acc.income += transaction.amount
-          } else {
+          const type = transaction.type ? transaction.type.toLowerCase() : '';
+          if (type === 'income') {
+            acc.income += Math.abs(transaction.amount)
+          } else if (type === 'expense') {
             acc.expenses += Math.abs(transaction.amount)
           }
         }

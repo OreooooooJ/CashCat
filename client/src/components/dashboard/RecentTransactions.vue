@@ -12,7 +12,10 @@
                 {{ transaction.originalDescription }}
               </span>
             </div>
-            <span class="amount" :class="{ negative: transaction.amount < 0 }">
+            <span class="amount" :class="{ 
+              'income': transaction.type === 'income' || transaction.type === 'INCOME', 
+              'expense': transaction.type === 'expense' || transaction.type === 'EXPENSE' 
+            }">
               {{ formatCurrency(transaction.amount) }}
             </span>
           </div>
@@ -47,6 +50,25 @@ import { categoryColors, subcategoryIcons } from '@/services/mockData'
 const props = defineProps<{
   transactions: Transaction[]
 }>()
+
+// Debug log to see transaction types
+console.log('RecentTransactions received transactions:', props.transactions.map(t => ({
+  description: t.description,
+  type: t.type,
+  accountId: t.accountId,
+  amount: t.amount
+})));
+
+// Additional debug log to check for any transactions with unexpected types
+const unexpectedTypes = props.transactions.filter(t => 
+  t.type !== 'income' && 
+  t.type !== 'expense' && 
+  t.type !== 'INCOME' && 
+  t.type !== 'EXPENSE'
+);
+if (unexpectedTypes.length > 0) {
+  console.warn('Found transactions with unexpected types:', unexpectedTypes);
+}
 
 const formatCurrency = (amount: number) => {
   return currency(amount, { symbol: '$' }).format()
@@ -135,7 +157,11 @@ h3 {
   white-space: nowrap;
 }
 
-.amount.negative {
+.amount.income {
+  color: #047857;
+}
+
+.amount.expense {
   color: #dc2626;
 }
 

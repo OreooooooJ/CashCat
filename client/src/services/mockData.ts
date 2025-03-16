@@ -1,3 +1,10 @@
+/**
+ * DEVELOPMENT/TESTING ONLY
+ * 
+ * This file contains mock account and transaction data for development and testing purposes.
+ * It should not be imported in production code.
+ */
+
 import type { Transaction } from '@/types/transaction'
 
 export interface Account {

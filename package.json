@@ -3,25 +3,39 @@
   "version": "1.0.0",
   "description": "CashCat - Personal Finance Management App",
   "private": true,
+  "type": "module",
   "workspaces": [
     "client",
-    "server"
+    "server",
+    "shared-types"
   ],
   "scripts": {
-    "dev:client": "yarn workspace cashcat-client dev",
-    "dev:server": "yarn workspace cashcat-server dev",
+    "dev:client": "yarn workspace client dev",
+    "dev:server": "yarn workspace server dev",
     "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
-    "build:client": "yarn workspace cashcat-client build",
-    "build:server": "yarn workspace cashcat-server build",
-    "build": "yarn build:client && yarn build:server",
-    "test": "yarn workspace cashcat-client test && yarn workspace cashcat-server test",
-    "test:watch": "yarn workspace cashcat-client test:watch",
-    "test:coverage": "yarn workspace cashcat-client test:coverage",
-    "lint": "eslint --ext .js,.ts,.vue ."
+    "build:client": "yarn workspace client build",
+    "build:server": "yarn workspace server build",
+    "build:shared": "yarn workspace shared-types build",
+    "build": "yarn build:shared && yarn build:client && yarn build:server",
+    "test": "yarn workspace client test && yarn workspace server test",
+    "test:watch": "yarn workspace client test:watch",
+    "test:coverage": "yarn workspace client test:coverage",
+    "lint": "eslint client server shared-types --ext .js,.ts,.vue",
+    "lint:client": "eslint \"client/src/**/*.{ts,vue}\" --quiet || true"
+  },
+  "engines": {
+    "node": ">=20",
+    "yarn": ">=4.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "concurrently": "^8.2.2",
-    "eslint": "^9.22.0"
+    "eslint": "^9.22.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "globals": "^16.0.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1",
+    "vue-eslint-parser": "^10.1.1"
   },
   "packageManager": "yarn@4.1.1"
 }

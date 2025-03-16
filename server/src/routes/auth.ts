@@ -29,14 +29,14 @@ router.post('/register', async (req, res) => {
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        passwordHash,
+        password: hashedPassword,
       },
     });
 
@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Verify password
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
