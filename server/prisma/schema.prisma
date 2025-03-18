@@ -1,39 +1,51 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL")
-  extensions = [pgcrypto]
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DATABASE_URL")
+  extensions = [pgcrypto, uuid_ossp(map: "uuid-ossp", schema: "extensions")]
 }
 
 model User {
-  id                 String              @id @default(uuid())
-  email              String              @unique
-  password           String
-  name               String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  accounts           Account[]
-  budgets            Budget[]
-  categoryChangeLogs CategoryChangeLog[]
-  transactions       Transaction[]
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  password            String
+  name                String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  accounts            Account[]
+  budgets             Budget[]
+  categoryChangeLogs  CategoryChangeLog[]
+  stagingTransactions StagingTransaction[]
+  transactions        Transaction[]
 }
 
 model Transaction {
   id                 String              @id @default(uuid())
   amount             Float
-  type               String
+  type               String               // "income" or "expense"
   category           String
   description        String?
   date               DateTime            @default(now())
   userId             String
   accountId          String?
+  
+  // Fields for CSV integration
+  originalDescription String?            // Original unmodified description from import source
+  vendor             String?             // Vendor name, from Card Member field
+  accountNumber      String?             // Account number from the CSV
+  source             String?             // Source of the transaction (e.g., "csv", "manual", "api")
+  bankName           String?             // Name of the bank/financial institution
+  
+  // Standard timestamps
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+  
+  // Relations
   categoryChangeLogs CategoryChangeLog[]
   account            Account?            @relation(fields: [accountId], references: [id])
   user               User                @relation(fields: [userId], references: [id])
@@ -52,18 +64,19 @@ model Budget {
 }
 
 model Account {
-  id           String        @id @default(uuid())
-  name         String
-  type         String
-  balance      Float
-  institution  String?
-  lastFour     String?
-  color        String?
-  userId       String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  user         User          @relation(fields: [userId], references: [id])
-  transactions Transaction[]
+  id                  String               @id @default(uuid())
+  name                String
+  type                String
+  balance             Float
+  institution         String?
+  lastFour            String?
+  color               String?
+  userId              String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  user                User                 @relation(fields: [userId], references: [id])
+  stagingTransactions StagingTransaction[]
+  transactions        Transaction[]
 }
 
 model CategoryChangeLog {
@@ -73,6 +86,24 @@ model CategoryChangeLog {
   newCategory      String
   userId           String
   timestamp        DateTime    @default(now())
-  user             User        @relation(fields: [userId], references: [id])
   transaction      Transaction @relation(fields: [transactionId], references: [id])
+  user             User        @relation(fields: [userId], references: [id])
+}
+
+model StagingTransaction {
+  id          String   @id @default(uuid())
+  rawData     String
+  amount      Float
+  type        String
+  category    String?
+  description String?
+  date        DateTime @default(now())
+  bankName    String?
+  source      String
+  userId      String
+  accountId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  account     Account? @relation(fields: [accountId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }

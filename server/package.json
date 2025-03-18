@@ -15,6 +15,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "seed": "node --loader ts-node/esm src/scripts/seedData.ts",
+    "seed:staging": "node --loader ts-node/esm src/scripts/seedStagingTransactions.ts",
+    "seed:march": "node --loader ts-node/esm src/scripts/seedMarchTransactions.ts",
+    "seed:transactions:csv": "node --loader ts-node/esm scripts/reseedTransactionsFromCsv.ts",
     "db:migrate": "node --loader ts-node/esm src/scripts/applyMigration.ts",
     "analyze:categories": "node --loader ts-node/esm src/scripts/analyzeCategoryChanges.ts"
   },
@@ -27,6 +30,7 @@
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
+    "csv-writer": "^1.6.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
