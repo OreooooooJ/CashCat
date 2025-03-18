@@ -9,6 +9,7 @@ CashCat is a modern, full-stack personal finance management application built wi
 - **Budget Management**: Create and monitor category-based budgets
 - **Financial Dashboard**: Visualize spending patterns and financial health
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **CSV Import**: Import transactions from bank and credit card statements
 
 ## Tech Stack
 
@@ -186,6 +187,43 @@ Open Prisma Studio (database GUI):
 ```bash
 cd server && yarn prisma:studio
 ```
+
+## CSV Transaction Import
+
+CashCat supports importing transactions from CSV files exported from banks and credit card providers.
+
+### Import from CSV
+
+To import transactions from CSV files:
+
+1. Place your CSV files in the `resources` directory with the following naming conventions:
+   - `Chase_checking1.csv` or `Chase_checking2.csv` for checking accounts
+   - `amexMonthlyStatement.csv` for credit card statements
+
+2. Run the import script:
+```bash
+cd server && yarn seed:transactions:csv
+```
+
+The script will:
+- Automatically detect the appropriate account type based on the filename
+- Parse dates, amounts, and categories
+- Format transaction data consistently
+- Insert transactions into the database
+
+### CSV Format Support
+
+Currently supported CSV formats:
+- Chase Bank checking accounts
+- American Express credit card statements
+
+All CSV files should have the following columns:
+- `Date`: Transaction date in MM/DD/YYYY format
+- `Description`: Transaction description
+- `Card Member`: Card member or account holder name
+- `Account #`: Account number (masked)
+- `Amount`: Transaction amount (positive for income/expenses depending on account type)
+- `Category`: Transaction category (optional)
 
 ## Future Plans
 
