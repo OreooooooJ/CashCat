@@ -2270,10 +2270,13 @@ __metadata:
   resolution: "cashcat@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.22.0"
+    chartjs-plugin-annotation: "npm:^3.1.0"
     concurrently: "npm:^8.2.2"
     eslint: "npm:^9.22.0"
     eslint-plugin-vue: "npm:^10.0.0"
     globals: "npm:^16.0.0"
+    primeicons: "npm:^7.0.0"
+    primevue: "npm:^3.30.0"
     typescript: "npm:^5.8.2"
     typescript-eslint: "npm:^8.26.1"
     vue-eslint-parser: "npm:^10.1.1"
@@ -2311,6 +2314,15 @@ __metadata:
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
   checksum: 10/48d06f4f78931e2981d80d2316df8bc5a9f1e3e586de81b7083bf34a1d6aca74529212c69283c80151b3fd83a0e55982121fd0ac2ade7ede70d80c5626a9371f
+  languageName: node
+  linkType: hard
+
+"chartjs-plugin-annotation@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "chartjs-plugin-annotation@npm:3.1.0"
+  peerDependencies:
+    chart.js: ">=4.0.0"
+  checksum: 10/0b0889e665f1aefd2a7b24998013df72c7e022836427b799f219f2f9d838a89ec0a5531d233cfe440c3798bf85646d8435151967b678ab3ffc63c6266edfbf2c
   languageName: node
   linkType: hard
 
@@ -2670,6 +2682,13 @@ __metadata:
   bin:
     csv-parser: bin/csv-parser
   checksum: 10/09a63fa8b6e9c0b75cf5a12cc53abecbe696b8b6ebfdf7ddb0a1e3a97e8f3f19a77d2ffa434810958fd4841682ea8d1a9c08f6fb84f1c0ec393cecdb72131735
+  languageName: node
+  linkType: hard
+
+"csv-writer@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "csv-writer@npm:1.6.0"
+  checksum: 10/01ae6eb0653ef823278ba89192146631c577a8d4f69eba82cb71b315b87852952d7e1fa1d693561f00f89fd4e99433e2a8e570394d0273b0214999a0607326da
   languageName: node
   linkType: hard
 
@@ -5542,6 +5561,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"primeicons@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "primeicons@npm:7.0.0"
+  checksum: 10/ff1d698a4d5932105393cd3288c6b1fd92ad30b6fbce1b49de86bcc1917d74d6769c12061d43aa8657fe52ac79d9336527f0708d8c5a0347a1ddcd3e47d0eb73
+  languageName: node
+  linkType: hard
+
+"primevue@npm:^3.30.0":
+  version: 3.53.1
+  resolution: "primevue@npm:3.53.1"
+  peerDependencies:
+    vue: ^3.0.0
+  checksum: 10/a0e9a07a976f41f9859049ef44b96f3a03185f5af30a05bf8afec65fd73a5a72b5896c4e0803a2119652c37357b7b9166b5f1f4d0913e4f85f5d931f63573cf6
+  languageName: node
+  linkType: hard
+
 "prisma@npm:^6.5.0":
   version: 6.5.0
   resolution: "prisma@npm:6.5.0"
@@ -6038,6 +6073,7 @@ __metadata:
     bcrypt: "npm:^5.1.1"
     cors: "npm:^2.8.5"
     csv-parser: "npm:^3.2.0"
+    csv-writer: "npm:^1.6.0"
     date-fns: "npm:^4.1.0"
     dotenv: "npm:^16.4.5"
     express: "npm:^4.18.3"

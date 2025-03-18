@@ -1,16 +1,16 @@
 <template>
   <div class="accounts-view">
     <div class="page-header">
-      <h1>Accounts</h1>
+      <h1>Bank Accounts</h1>
       <button class="add-account-btn" @click="showAddAccountModal = true">
         <PlusIcon class="w-5 h-5 mr-2" />
-        Add Account
+        Add Bank Account
       </button>
     </div>
 
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Loading accounts...</p>
+      <p>Loading bank accounts...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
@@ -21,11 +21,11 @@
 
     <div v-else-if="accounts.length === 0" class="empty-state">
       <CreditCardIcon class="w-16 h-16 text-gray-300" />
-      <h2>No Accounts Yet</h2>
-      <p>Add your first account to start tracking your finances</p>
+      <h2>No Bank Accounts Yet</h2>
+      <p>Add your first bank account to start tracking your finances</p>
       <button class="add-account-btn" @click="showAddAccountModal = true">
         <PlusIcon class="w-5 h-5 mr-2" />
-        Add Account
+        Add Bank Account
       </button>
       
       <!-- Debug button to create a test account -->
@@ -36,13 +36,13 @@
           :disabled="isCreatingTest"
           @click="createTestAccount"
         >
-          {{ isCreatingTest ? 'Creating...' : 'Create Test Account' }}
+          {{ isCreatingTest ? 'Creating...' : 'Create Test Bank Account' }}
         </button>
         <button 
           class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600" 
           @click="checkAccounts"
         >
-          Check Accounts
+          Check Bank Accounts
         </button>
         <div v-if="testAccountResult" class="mt-2 text-sm">
           {{ testAccountResult }}
@@ -138,7 +138,7 @@
     <div v-if="showAddAccountModal" class="modal-overlay">
       <div class="modal-container">
         <div class="modal-header">
-          <h2>Add New Account</h2>
+          <h2>Add New Bank Account</h2>
           <button class="close-btn" @click="showAddAccountModal = false">
             <XMarkIcon class="w-5 h-5" />
           </button>
@@ -158,7 +158,7 @@
           <div class="form-group">
             <label for="account-type">Account Type</label>
             <select id="account-type" v-model="newAccount.type" required>
-              <option value="debit">Cash/Debit</option>
+              <option value="checking">Cash/Debit</option>
               <option value="credit">Credit Card</option>
               <option value="investment">Investment</option>
             </select>
@@ -222,7 +222,7 @@
             </button>
             <button type="submit" class="submit-btn" :disabled="isSubmitting">
               <span v-if="isSubmitting">Adding...</span>
-              <span v-else>Add Account</span>
+              <span v-else>Add Bank Account</span>
             </button>
           </div>
         </form>
@@ -253,7 +253,7 @@ const error = computed(() => accountStore.error);
 const totalBalance = computed(() => accountStore.totalBalance());
 
 const debitAccounts = computed(() => 
-  accounts.value.filter(account => account.type === 'debit')
+  accounts.value.filter(account => account.type === 'checking' || account.type === 'savings')
 );
 
 const creditAccounts = computed(() => 
@@ -282,7 +282,7 @@ const accountColors = [
 
 const newAccount = ref({
   name: '',
-  type: 'debit',
+  type: 'checking',
   balance: '',
   institution: '',
   lastFour: '',
@@ -305,7 +305,7 @@ const formatBalance = (event: Event) => {
 const resetNewAccountForm = () => {
   newAccount.value = {
     name: '',
-    type: 'debit',
+    type: 'checking',
     balance: '',
     institution: '',
     lastFour: '',
@@ -327,7 +327,7 @@ const submitNewAccount = async () => {
     
     await accountStore.addAccount({
       name: newAccount.value.name,
-      type: newAccount.value.type as 'debit' | 'credit' | 'investment',
+      type: newAccount.value.type as 'checking' | 'savings' | 'credit' | 'investment',
       balance: adjustedBalance,
       institution: newAccount.value.institution || undefined,
       lastFour: newAccount.value.lastFour || undefined,
@@ -363,7 +363,7 @@ const createTestAccount = async () => {
   try {
     const testAccount = {
       name: 'Test Account',
-      type: 'debit' as 'debit' | 'credit' | 'investment',
+      type: 'checking' as 'checking' | 'savings' | 'credit' | 'investment',
       balance: 1000,
       institution: 'Test Bank',
       lastFour: '1234',

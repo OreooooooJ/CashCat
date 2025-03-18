@@ -3,6 +3,14 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { processTransaction } from './transactionProcessingService';
 import { updateAccountBalanceForTransaction } from './accountBalanceService';
+import { createStagingTransaction } from './stagingTransactionService';
+import { 
+  formatAmount, 
+  formatDescription, 
+  formatCategory,
+  standardizeTransaction,
+  standardizeStagingTransaction
+} from '../utils/formatUtils.js';
 
 const prisma = new PrismaClient();
 
@@ -13,6 +21,15 @@ interface ColumnMapping {
   amount: string;
   category?: string;
   accountNumber?: string;
+}
+
+// Updated BankFormat interface with dateFormat and amountFormat
+interface BankFormat {
+  name: string;
+  columnMapping: ColumnMapping;
+  dateFormat: string;
+  amountFormat: string;
+  detectionHeaders: string[];
 }
 
 // Define interface for transaction data
@@ -26,96 +43,109 @@ interface TransactionData {
   accountId: string;
 }
 
-interface Transformation {
-  date: (value: string) => Date;
-  amount: (value: string) => number;
-  type: (value: number) => 'income' | 'expense';
-  description?: (value: string) => string;
-}
+// Helper functions for parsing CSV data
+const parseDate = (dateStr: string, format: string): Date => {
+  // Simple date parsing based on format
+  // In a real implementation, you would use a library like date-fns or moment
+  try {
+    // Default to current date if parsing fails
+    if (!dateStr) return new Date();
+    
+    // Basic implementation - assumes format is MM/DD/YYYY or YYYY-MM-DD
+    if (format === 'MM/DD/YYYY') {
+      const [month, day, year] = dateStr.split('/');
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    } else if (format === 'YYYY-MM-DD') {
+      return new Date(dateStr);
+    } else {
+      // Default fallback
+      return new Date(dateStr);
+    }
+  } catch (error) {
+    console.error('Error parsing date:', error);
+    return new Date();
+  }
+};
 
-interface BankFormat {
-  name: string;
-  detection: (headers: string[]) => boolean;
-  columnMapping: ColumnMapping;
-  transformation: Transformation;
-}
+const parseAmount = (amountStr: string, format: string): number => {
+  try {
+    // Remove currency symbols, commas, etc.
+    let cleanAmount = amountStr.replace(/[$,]/g, '');
+    
+    // Handle different formats
+    if (format === 'negative-expense') {
+      // Negative numbers are expenses (e.g., -10.00 is an expense)
+      return formatAmount(parseFloat(cleanAmount));
+    } else if (format === 'parentheses-expense') {
+      // Amounts in parentheses are expenses (e.g., (10.00) is an expense)
+      if (cleanAmount.startsWith('(') && cleanAmount.endsWith(')')) {
+        cleanAmount = '-' + cleanAmount.substring(1, cleanAmount.length - 1);
+      }
+      return formatAmount(parseFloat(cleanAmount));
+    } else {
+      // Default: just parse as float
+      return formatAmount(parseFloat(cleanAmount));
+    }
+  } catch (error) {
+    console.error('Error parsing amount:', error);
+    return 0;
+  }
+};
+
+// Use our formatDescription utility instead of this function
+const cleanDescription = formatDescription;
 
 // Define bank formats
 const bankFormats: BankFormat[] = [
   {
-    name: 'Amex',
-    detection: (headers) => 
-      headers.includes('Date') && 
-      headers.includes('Description') && 
-      headers.includes('Card Member') && 
-      headers.includes('Amount'),
-    columnMapping: {
-      date: 'Date',
-      description: 'Description',
-      amount: 'Amount',
-      category: 'Category',
-      accountNumber: 'Account #'
-    },
-    transformation: {
-      date: (value) => new Date(value),
-      amount: (value) => parseFloat(value),
-      type: (amount) => amount > 0 ? 'expense' : 'income',
-      description: (value) => value.trim()
-    }
-  },
-  {
     name: 'Chase',
-    detection: (headers) => 
-      headers.includes('Date') && 
-      headers.includes('Description') && 
-      headers.includes('Amount') &&
-      headers.includes('Card Member'),
     columnMapping: {
-      date: 'Date',
+      date: 'Transaction Date',
       description: 'Description',
       amount: 'Amount',
-      accountNumber: 'Account #'
     },
-    transformation: {
-      date: (value) => new Date(value),
-      amount: (value) => {
-        // Chase typically uses negative for expenses, positive for income
-        return parseFloat(value.replace('$', '').replace(',', ''));
-      },
-      type: (amount) => amount < 0 ? 'expense' : 'income',
-      description: (value) => value.trim()
-    }
+    dateFormat: 'MM/DD/YYYY',
+    amountFormat: 'negative-expense',
+    detectionHeaders: ['Transaction Date', 'Post Date', 'Description', 'Category', 'Type', 'Amount', 'Memo']
   },
   {
     name: 'Bank of America',
-    detection: (headers) => 
-      headers.includes('Date') && 
-      headers.includes('Description') && 
-      headers.includes('Amount') && 
-      headers.includes('Running Bal.'),
     columnMapping: {
       date: 'Date',
       description: 'Description',
-      amount: 'Amount'
+      amount: 'Amount',
     },
-    transformation: {
-      date: (value) => new Date(value),
-      amount: (value) => {
-        // Bank of America typically uses negative for expenses, positive for income
-        return parseFloat(value.replace('$', '').replace(',', ''));
-      },
-      type: (amount) => amount < 0 ? 'expense' : 'income'
-    }
+    dateFormat: 'MM/DD/YYYY',
+    amountFormat: 'negative-expense',
+    detectionHeaders: ['Date', 'Description', 'Amount', 'Running Bal.']
+  },
+  {
+    name: 'Wells Fargo',
+    columnMapping: {
+      date: 'Date',
+      description: 'Description',
+      amount: 'Amount',
+    },
+    dateFormat: 'MM/DD/YYYY',
+    amountFormat: 'parentheses-expense',
+    detectionHeaders: ['Date', 'Amount', 'Description', 'Balance']
   }
 ];
 
 /**
  * Detect the bank format from CSV headers
- * @param headers CSV headers
+ * @param headers Array of CSV headers
  * @returns The detected bank format or undefined if not detected
  */
 const detectFormat = (headers: string[]): BankFormat | undefined => {
-  return bankFormats.find(format => format.detection(headers));
+  // Convert headers to lowercase for case-insensitive matching
+  const lowerHeaders = headers.map(h => h.toLowerCase());
+  
+  // Find a format where all detection headers are present
+  return bankFormats.find(format => {
+    const requiredHeaders = format.detectionHeaders.map(h => h.toLowerCase());
+    return requiredHeaders.every(header => lowerHeaders.includes(header));
+  });
 };
 
 /**
@@ -165,12 +195,12 @@ const checkDuplicateTransaction = async (transaction: TransactionData, userId: s
 };
 
 /**
- * Process a CSV file and import transactions
+ * Process a CSV file and import transactions to staging
  * @param filePath Path to the CSV file
  * @param userId User ID to associate with transactions
  * @param accountId Account ID to associate with transactions
  * @param formatName Optional format name to use (if not auto-detected)
- * @returns Promise resolving to the imported transactions
+ * @returns Promise resolving to the imported staging transactions
  */
 export const importCsvTransactions = async (
   filePath: string,
@@ -178,195 +208,162 @@ export const importCsvTransactions = async (
   accountId: string,
   formatName?: string
 ): Promise<any[]> => {
-  return new Promise(async (resolve, reject) => {
-    const results: TransactionData[] = [];
+  return new Promise((resolve, reject) => {
+    const results: any[] = [];
     const headers: string[] = [];
     let format: BankFormat | undefined;
-    let skippedDuplicates = 0;
     
     // Get account type to determine transaction type logic
     let accountType: string;
-    try {
-      const account = await prisma.account.findUnique({
-        where: { id: accountId },
-        select: { type: true }
-      });
-      
-      if (!account) {
-        return reject(new Error(`Account not found with ID: ${accountId}`));
-      }
-      
-      accountType = account.type.toLowerCase();
-      console.log(`Account type for import: ${accountType}`);
-    } catch (error) {
-      console.error('Error fetching account type:', error);
-      return reject(new Error('Failed to fetch account type'));
-    }
     
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      return reject(new Error(`File not found at path: ${filePath}`));
-    }
-    
-    // Create read stream for CSV file
-    fs.createReadStream(filePath)
-      .pipe(csv())
-      .on('headers', (csvHeaders) => {
-        try {
-          // Store headers for format detection
-          headers.push(...csvHeaders);
-          console.log('CSV Headers:', headers);
-          
-          // Detect format or use specified format
-          if (formatName) {
-            format = bankFormats.find(f => f.name === formatName);
-            console.log(`Using specified format: ${formatName}, found:`, !!format);
-          } else {
-            format = detectFormat(headers);
-            console.log('Auto-detected format:', format?.name || 'None');
-          }
-          
-          if (!format) {
-            reject(new Error('Unsupported CSV format. Could not detect bank format.'));
-          }
-        } catch (headerError) {
-          console.error('Error processing CSV headers:', headerError);
-          reject(headerError);
-        }
-      })
-      .on('data', (data) => {
-        if (!format) return;
+    (async () => {
+      try {
+        const account = await prisma.account.findUnique({
+          where: { id: accountId },
+          select: { type: true, institution: true }
+        });
         
-        try {
-          // Map CSV row to transaction data
-          const { columnMapping, transformation } = format;
-          
-          // Extract values using column mapping
-          const dateStr = data[columnMapping.date];
-          const description = data[columnMapping.description];
-          const amountStr = data[columnMapping.amount];
-          
-          // Skip rows with missing required data
-          if (!dateStr || !description || !amountStr) {
-            console.log('Skipping row with missing data:', { dateStr, description, amountStr });
-            return;
-          }
-          
-          // Apply transformations
-          const date = transformation.date(dateStr);
-          const amount = transformation.amount(amountStr);
-          const transformedDescription = transformation.description 
-            ? transformation.description(description) 
-            : description;
-          
-          // Determine transaction type based on account type and amount
-          let type: 'income' | 'expense';
-          
-          if (accountType === 'credit') {
-            // For credit cards: positive = expense, negative = income (payment)
-            // This is because credit card purchases (expenses) increase the balance (positive)
-            // while payments (income) decrease the balance (negative)
-            console.log(`Credit card transaction: ${transformedDescription}, amount: ${amount}, setting type to: ${amount > 0 ? 'expense' : 'income'}`);
-            type = amount > 0 ? 'expense' : 'income';
-          } else {
-            // For debit accounts: positive = income, negative = expense
-            // This is because deposits (income) increase the balance (positive)
-            // while purchases (expenses) decrease the balance (negative)
-            console.log(`Debit account transaction: ${transformedDescription}, amount: ${amount}, setting type to: ${amount > 0 ? 'income' : 'expense'}`);
-            type = amount > 0 ? 'income' : 'expense';
-          }
-          
-          // Create transaction object
-          const transaction = {
-            amount: Math.abs(amount), // Store absolute amount
-            type,
-            description: transformedDescription,
-            date,
-            userId,
-            accountId
-          };
-          
-          // Process transaction to determine category
-          const processedTransaction = processTransaction(transaction, userId);
-          
-          // Add to results
-          results.push({
-            ...transaction,
-            category: processedTransaction.category
-          });
-        } catch (error) {
-          console.error('Error processing CSV row:', error);
-          // Continue processing other rows
+        if (!account) {
+          return reject(new Error(`Account not found with ID: ${accountId}`));
         }
-      })
-      .on('end', async () => {
-        try {
-          console.log(`Finished processing CSV. Found ${results.length} valid transactions.`);
-          
-          if (results.length === 0) {
-            return resolve([]);
-          }
-          
-          // Check for duplicates before inserting
-          console.log('Checking for duplicate transactions...');
-          const transactionsToCreate: TransactionData[] = [];
-          
-          for (const transaction of results) {
-            const isDuplicate = await checkDuplicateTransaction(transaction, userId);
-            if (isDuplicate) {
-              console.log(`Skipping duplicate transaction: ${transaction.description} on ${transaction.date.toISOString().split('T')[0]} for $${transaction.amount}`);
-              skippedDuplicates++;
+        
+        accountType = account.type.toLowerCase();
+        console.log(`Account type for import: ${accountType}`);
+        
+        // Check if file exists
+        if (!fs.existsSync(filePath)) {
+          return reject(new Error(`File not found at path: ${filePath}`));
+        }
+        
+        fs.createReadStream(filePath)
+          .pipe(csv())
+          .on('headers', (headerList) => {
+            // Store headers for format detection
+            headerList.forEach(header => headers.push(header));
+            
+            // Try to detect format or use provided format
+            if (formatName) {
+              format = bankFormats.find(f => f.name === formatName);
+              if (!format) {
+                return reject(new Error(`Unknown format: ${formatName}`));
+              }
             } else {
-              transactionsToCreate.push(transaction);
+              format = detectFormat(headers);
+              if (!format) {
+                return reject(new Error('Could not auto-detect CSV format. Please specify a format.'));
+              }
             }
-          }
-          
-          if (transactionsToCreate.length === 0) {
-            console.log(`All ${skippedDuplicates} transactions were duplicates. Nothing to import.`);
-            return resolve([]);
-          }
-          
-          // Batch insert transactions
-          console.log(`Starting database transaction for batch insert of ${transactionsToCreate.length} transactions (skipped ${skippedDuplicates} duplicates)...`);
-          const createdTransactions = await prisma.$transaction(
-            transactionsToCreate.map(transaction => 
-              prisma.transaction.create({
-                data: {
-                  amount: transaction.amount,
-                  type: transaction.type,
-                  category: transaction.category,
-                  description: transaction.description,
-                  date: transaction.date,
-                  userId: transaction.userId,
-                  accountId: transaction.accountId,
-                }
-              })
-            )
-          );
-          
-          console.log(`Successfully created ${createdTransactions.length} transactions in database.`);
-          
-          // Update account balance for each transaction
-          console.log('Updating account balance...');
-          for (const transaction of createdTransactions) {
-            await updateAccountBalanceForTransaction(
-              transaction.accountId,
-              transaction.type,
-              transaction.amount,
-              true // This is an addition
-            );
-          }
-          
-          resolve(createdTransactions);
-        } catch (error) {
-          console.error('Error saving transactions to database:', error);
-          reject(error);
-        }
-      })
-      .on('error', (error) => {
-        console.error('CSV parsing error:', error);
-        reject(error);
-      });
+            
+            console.log(`Using format: ${format.name}`);
+          })
+          .on('data', async (data) => {
+            if (!format) return;
+            
+            try {
+              // Extract data using the format's column mapping
+              const mapping = format.columnMapping;
+              
+              // Get date
+              const dateStr = data[mapping.date];
+              const date = parseDate(dateStr, format.dateFormat);
+              
+              // Get description
+              const description = data[mapping.description] || '';
+              const transformedDescription = formatDescription(description);
+              
+              // Get amount
+              const amountStr = data[mapping.amount];
+              const amount = parseAmount(amountStr, format.amountFormat);
+              
+              // Determine transaction type based on account type and amount
+              let type: string;
+              
+              if (accountType === 'credit') {
+                // For credit cards: positive = expense, negative = income (payment)
+                type = amount > 0 ? 'expense' : 'income';
+              } else {
+                // For debit accounts: positive = income, negative = expense
+                type = amount > 0 ? 'income' : 'expense';
+              }
+              
+              // Create transaction object
+              const transaction = {
+                amount: Math.abs(amount), // Store absolute amount
+                type,
+                description: transformedDescription,
+                date,
+                userId,
+                accountId
+              };
+              
+              // Process transaction to determine category
+              const processedTransaction = processTransaction(transaction, userId);
+              
+              // Create a staging transaction
+              const rawData = JSON.stringify(data); // Store the entire CSV row as JSON
+              
+              // Create standardized transaction data
+              const transactionData = {
+                amount: Math.abs(amount),
+                type,
+                description: transformedDescription,
+                date,
+                category: processedTransaction.category,
+                userId,
+                accountId,
+                bankName: account.institution || undefined,
+                source: 'csv',
+                rawData
+              };
+              
+              // Standardize the transaction data
+              const standardizedTransaction = standardizeStagingTransaction(transactionData);
+              
+              const stagingTransaction = await createStagingTransaction(
+                rawData,
+                {
+                  amount: standardizedTransaction.amount,
+                  type: standardizedTransaction.type,
+                  description: standardizedTransaction.description,
+                  date: standardizedTransaction.date,
+                  category: standardizedTransaction.category
+                },
+                userId,
+                accountId,
+                'csv',
+                standardizedTransaction.bankName
+              );
+              
+              // Add to results
+              results.push(stagingTransaction);
+            } catch (error) {
+              console.error('Error processing CSV row:', error);
+              // Continue processing other rows
+            }
+          })
+          .on('end', async () => {
+            try {
+              console.log(`Finished processing CSV. Created ${results.length} staging transactions.`);
+              
+              if (results.length === 0) {
+                return resolve([]);
+              }
+              
+              resolve(results);
+            } catch (error) {
+              console.error('Error saving staging transactions to database:', error);
+              reject(error);
+            }
+          })
+          .on('error', (error) => {
+            console.error('CSV parsing error:', error);
+            reject(error);
+          });
+      } catch (error) {
+        console.error('Error fetching account type:', error);
+        return reject(new Error('Failed to fetch account type'));
+      }
+    })();
   });
 };
 

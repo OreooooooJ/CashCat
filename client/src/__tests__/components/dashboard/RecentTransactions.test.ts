@@ -19,8 +19,9 @@ describe('RecentTransactions', () => {
       {
         id: 't1',
         amount: 100,
-        vendor: 'Test Vendor',
+        type: 'INCOME',
         category: 'Test Category',
+        description: 'Test Vendor',
         date: new Date(),
         accountId: 'acc1'
       }

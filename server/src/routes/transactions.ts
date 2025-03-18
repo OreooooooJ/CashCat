@@ -4,6 +4,11 @@ import { authenticateToken } from '../middleware/auth';
 import { processTransaction, updateTransactionCategory } from '../services/transactionProcessingService';
 import { getSupportedFormats } from '../services/csvImportService';
 import { importCsv } from '../controllers/importController';
+import { 
+  getAllStagingTransactions, 
+  processSelectedStagingTransactions, 
+  deleteSelectedStagingTransactions 
+} from '../controllers/stagingTransactionController';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -47,14 +52,28 @@ router.get('/', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.id;
     const limitParam = req.query.limit;
+    const accountId = req.query.accountId as string | undefined;
     const limit = limitParam ? parseInt(limitParam.toString()) : 100;
     
+    console.log('🔍 TRANSACTIONS API: GET /api/transactions - User ID:', userId);
+    
     if (!userId) {
+      console.log('🔍 TRANSACTIONS API: No user ID found in request');
       return res.status(401).json({ error: 'User not authenticated' });
     }
     
-    const transactions = await prisma.transaction.findMany({
-      where: { userId },
+    // Build the where clause based on query parameters
+    const whereClause: any = { userId };
+    
+    // Add accountId filter if provided
+    if (accountId) {
+      whereClause.accountId = accountId;
+      console.log(`🔍 TRANSACTIONS API: Filtering by accountId: ${accountId}`);
+    }
+    
+    console.log('🔍 TRANSACTIONS API: Fetching transactions for user:', userId);
+    console.log('🔍 TRANSACTIONS API: Query parameters:', { 
+      where: whereClause,
       orderBy: { date: 'desc' },
       take: limit,
       include: {
@@ -67,9 +86,47 @@ router.get('/', authenticateToken, async (req, res) => {
       }
     });
     
+    const transactions = await prisma.transaction.findMany({
+      where: whereClause,
+      orderBy: { date: 'desc' },
+      take: limit,
+      include: {
+        account: {
+          select: {
+            name: true,
+            type: true
+          }
+        }
+      }
+    });
+    
+    console.log(`🔍 TRANSACTIONS API: Found ${transactions.length} transactions for user ${userId}`);
+    if (transactions.length === 0) {
+      console.log('🔍 TRANSACTIONS API: No transactions found in database for this user');
+      
+      // Debug: Check if there are any transactions in the database at all
+      const allTransactions = await prisma.transaction.findMany({
+        take: 5
+      });
+      console.log(`🔍 TRANSACTIONS API: Total transactions in database (sample of 5): ${allTransactions.length}`);
+      if (allTransactions.length > 0) {
+        console.log('🔍 TRANSACTIONS API: Sample transaction:', JSON.stringify(allTransactions[0], null, 2));
+        console.log('🔍 TRANSACTIONS API: Sample transaction user ID:', allTransactions[0].userId);
+        console.log('🔍 TRANSACTIONS API: Does sample transaction user ID match current user ID?', 
+          allTransactions[0].userId === userId);
+      }
+      
+      // Try a direct query without the userId filter to see if that returns results
+      console.log('🔍 TRANSACTIONS API: Trying query without userId filter');
+      const unfilteredTransactions = await prisma.transaction.findMany({
+        take: 5
+      });
+      console.log(`🔍 TRANSACTIONS API: Unfiltered query returned ${unfilteredTransactions.length} transactions`);
+    }
+    
     res.json(transactions);
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error('🔍 TRANSACTIONS API: Error fetching transactions:', error);
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
 });
@@ -303,17 +360,6 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Get supported CSV formats
-router.get('/import/formats', authenticateToken, (req, res) => {
-  try {
-    const formats = getSupportedFormats();
-    res.json(formats);
-  } catch (error) {
-    console.error('Error fetching supported formats:', error);
-    res.status(500).json({ error: 'Failed to fetch supported formats' });
-  }
-});
-
 // Import transactions from CSV
 router.post('/import', authenticateToken, (req, res, next) => {
   // @ts-expect-error - Ignoring type issues with multer
@@ -324,5 +370,20 @@ router.post('/import', authenticateToken, (req, res, next) => {
     next();
   });
 }, importCsv);
+
+// Get supported CSV formats
+router.get('/import/formats', authenticateToken, (req, res) => {
+  try {
+    const formats = getSupportedFormats();
+    res.json(formats);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get supported formats' });
+  }
+});
+
+// Staging transaction routes
+router.get('/staging', authenticateToken, getAllStagingTransactions);
+router.post('/staging/process', authenticateToken, processSelectedStagingTransactions);
+router.post('/staging/delete', authenticateToken, deleteSelectedStagingTransactions);
 
 export default router; 

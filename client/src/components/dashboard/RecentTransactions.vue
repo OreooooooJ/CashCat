@@ -7,7 +7,7 @@
         <div class="transaction-info">
           <div class="primary-info">
             <div class="vendor-info">
-              <span class="vendor">{{ transaction.vendor }}</span>
+              <span class="vendor">{{ transaction.description || 'Unknown' }}</span>
               <span v-if="transaction.originalDescription" class="original-desc">
                 {{ transaction.originalDescription }}
               </span>
@@ -33,8 +33,8 @@
             </div>
             <span class="date">{{ formatDate(transaction.date) }}</span>
           </div>
-          <div v-if="transaction.description" class="description">
-            {{ transaction.description }}
+          <div v-if="transaction.accountId" class="description">
+            Account ID: {{ transaction.accountId }}
           </div>
         </div>
       </div>
@@ -52,12 +52,22 @@ const props = defineProps<{
 }>()
 
 // Debug log to see transaction types
-console.log('RecentTransactions received transactions:', props.transactions.map(t => ({
-  description: t.description,
-  type: t.type,
-  accountId: t.accountId,
-  amount: t.amount
-})));
+console.log('RecentTransactions received transactions:', props.transactions);
+
+// Check if transactions have the expected properties
+if (props.transactions.length > 0) {
+  console.log('First transaction:', {
+    id: props.transactions[0].id,
+    description: props.transactions[0].description,
+    type: props.transactions[0].type,
+    accountId: props.transactions[0].accountId,
+    amount: props.transactions[0].amount,
+    date: props.transactions[0].date,
+    vendor: props.transactions[0].vendor
+  });
+} else {
+  console.log('No transactions found, fetching from API...');
+}
 
 // Additional debug log to check for any transactions with unexpected types
 const unexpectedTypes = props.transactions.filter(t => 

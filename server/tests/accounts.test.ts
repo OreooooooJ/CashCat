@@ -31,12 +31,18 @@ vi.mock('@prisma/client', () => {
 });
 
 // Mock JWT
-vi.mock('jsonwebtoken', () => ({
-  verify: vi.fn(),
-  sign: vi.fn()
-}));
+vi.mock('jsonwebtoken', async () => {
+  return {
+    default: {
+      verify: vi.fn(),
+      sign: vi.fn()
+    },
+    verify: vi.fn(),
+    sign: vi.fn()
+  }
+});
 
-describe('Account API Routes', () => {
+describe('Bank Account API Routes', () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let prisma: any;
@@ -54,7 +60,7 @@ describe('Account API Routes', () => {
     {
       id: 'acc1',
       name: 'Checking Account',
-      type: 'debit',
+      type: 'checking',
       balance: 1000,
       institution: 'Bank of America',
       lastFour: '1234',
@@ -69,6 +75,17 @@ describe('Account API Routes', () => {
       balance: -500,
       institution: 'Chase',
       lastFour: '5678',
+      userId: 'user123',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 'acc3',
+      name: 'Savings Account',
+      type: 'savings',
+      balance: 5000,
+      institution: 'Bank of America',
+      lastFour: '9012',
       userId: 'user123',
       createdAt: new Date(),
       updatedAt: new Date()

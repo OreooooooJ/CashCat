@@ -22,9 +22,14 @@ vi.mock('@prisma/client', () => {
 });
 
 // Mock JWT
-vi.mock('jsonwebtoken', () => ({
-  verify: vi.fn()
-}));
+vi.mock('jsonwebtoken', async () => {
+  return {
+    default: {
+      verify: vi.fn()
+    },
+    verify: vi.fn()
+  }
+});
 
 // Mock bcrypt
 vi.mock('bcrypt', () => ({

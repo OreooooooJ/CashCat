@@ -1,7 +1,7 @@
 export interface Account {
   id: string
   name: string
-  type: 'debit' | 'credit' | 'investment'
+  type: 'checking' | 'savings' | 'credit' | 'investment'
   balance: number
   institution?: string
   lastFour?: string

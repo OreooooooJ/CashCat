@@ -180,7 +180,7 @@ const navigationItems: NavItem[] = [
     icon: HomeIcon
   },
   {
-    name: 'Accounts',
+    name: 'Bank Accounts',
     path: '/accounts',
     icon: CreditCardIcon
   },

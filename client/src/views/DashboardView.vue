@@ -1,5 +1,10 @@
 <template>
   <div class="dashboard">
+    <!-- Current Date Display -->
+    <div class="current-date-display">
+      <p>Current Date: {{ formattedCurrentDate }}</p>
+    </div>
+    
     <div class="grid-layout">
       <AccountsOverview
         class="accounts-overview"
@@ -22,11 +27,6 @@
         :transactions="recentTransactions"
       />
     </div>
-
-    <!-- Debug Refresh Button -->
-    <button class="debug-refresh" @click="refreshTransactions">
-      Refresh Transactions
-    </button>
 
     <!-- Add Transaction FAB -->
     <button class="fab" @click="openTransactionForm">
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { PlusIcon } from '@heroicons/vue/24/solid'
 import AccountsOverview from '../components/dashboard/AccountsOverview.vue'
@@ -80,6 +80,37 @@ const isModalOpen = ref(false)
 const transactionStore = useTransactionStore()
 const accountStore = useAccountStore()
 const accounts = computed(() => accountStore.accounts)
+const currentDate = ref(new Date())
+
+// Format the current date for display
+const formattedCurrentDate = computed(() => {
+  const options: Intl.DateTimeFormatOptions = { 
+    weekday: 'long',
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric'
+  }
+  return currentDate.value.toLocaleDateString('en-US', options)
+})
+
+// Update the current date every minute
+const updateCurrentDate = () => {
+  currentDate.value = new Date()
+}
+
+// Set up the timer when component is mounted
+onMounted(() => {
+  // Update immediately
+  updateCurrentDate()
+  
+  // Then update every minute
+  const intervalId = setInterval(updateCurrentDate, 60000)
+  
+  // Clear interval on component unmount
+  onUnmounted(() => {
+    clearInterval(intervalId)
+  })
+})
 
 // Computed values
 const totalIncome = computed(() => transactionStore.calculateTotalIncome())
@@ -114,10 +145,6 @@ const onTransactionAdded = async (transaction: Transaction) => {
   }
 }
 
-const refreshTransactions = async () => {
-  await transactionStore.fetchTransactions()
-}
-
 // Load initial data
 onMounted(async () => {
   // Fetch real account data from API
@@ -144,6 +171,20 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
+/* Make sure grid items have explicit styles */
+.accounts-overview,
+.cash-flow-overview,
+.budget-manager,
+.spending-chart,
+.recent-transactions {
+  width: 100%;
+  min-height: 100px;
+  display: block;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 @media (min-width: 768px) {
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
@@ -160,6 +201,7 @@ onMounted(async () => {
 
   .cash-flow-overview {
     grid-area: cash-flow;
+    min-height: 350px; /* Ensure enough height for the chart */
   }
 
   .budget-manager {
@@ -202,25 +244,6 @@ onMounted(async () => {
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.debug-refresh {
-  position: fixed;
-  bottom: 2rem;
-  left: 2rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  background-color: #ef4444;
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.debug-refresh:hover {
-  background-color: #dc2626;
 }
 
 /* Modal Styles */
@@ -296,5 +319,21 @@ onMounted(async () => {
 .modal-leave-to {
   opacity: 0;
   transform: scale(0.95);
+}
+
+.current-date-display {
+  background: white;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+
+.current-date-display p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #4b5563;
+  font-weight: 500;
 }
 </style>

@@ -1,5 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { 
+  formatAmount, 
+  formatDescription, 
+  formatCategory, 
+  standardizeTransaction 
+} from '../utils/formatUtils.js';
 
 const prisma = new PrismaClient();
 
@@ -29,7 +35,7 @@ async function main() {
       {
         name: 'Checking Account',
         type: 'checking',
-        balance: 5000,
+        balance: formatAmount(5000),
         institution: 'Bank of America',
         lastFour: '1234',
         color: '#10B981', // Green
@@ -38,7 +44,7 @@ async function main() {
       {
         name: 'Savings Account',
         type: 'savings',
-        balance: 10000,
+        balance: formatAmount(10000),
         institution: 'Bank of America',
         lastFour: '5678',
         color: '#3B82F6', // Blue
@@ -47,7 +53,7 @@ async function main() {
       {
         name: 'Credit Card',
         type: 'credit',
-        balance: -1500,
+        balance: formatAmount(-1500),
         institution: 'Chase',
         lastFour: '9012',
         color: '#EF4444', // Red
@@ -75,7 +81,7 @@ async function main() {
     const transactionData = [
       {
         amount: 3500,
-        type: 'INCOME',
+        type: 'income',
         category: 'Income',
         description: 'Monthly Salary',
         date: new Date(2024, 2, 1), // March 1, 2024
@@ -83,8 +89,8 @@ async function main() {
         accountId: createdAccounts[0].id, // Checking account
       },
       {
-        amount: -85.43,
-        type: 'EXPENSE',
+        amount: 85.43,
+        type: 'expense',
         category: 'Food & Dining',
         description: 'Grocery shopping',
         date: new Date(2024, 2, 5), // March 5, 2024
@@ -92,8 +98,8 @@ async function main() {
         accountId: createdAccounts[0].id, // Checking account
       },
       {
-        amount: -45.99,
-        type: 'EXPENSE',
+        amount: 45.99,
+        type: 'expense',
         category: 'Entertainment',
         description: 'Netflix subscription',
         date: new Date(2024, 2, 10), // March 10, 2024
@@ -101,8 +107,8 @@ async function main() {
         accountId: createdAccounts[2].id, // Credit card
       },
       {
-        amount: -125.00,
-        type: 'EXPENSE',
+        amount: 125.00,
+        type: 'expense',
         category: 'Bills & Utilities',
         description: 'Electricity bill',
         date: new Date(2024, 2, 15), // March 15, 2024
@@ -110,8 +116,8 @@ async function main() {
         accountId: createdAccounts[0].id, // Checking account
       },
       {
-        amount: -32.50,
-        type: 'EXPENSE',
+        amount: 32.50,
+        type: 'expense',
         category: 'Transportation',
         description: 'Gas',
         date: new Date(2024, 2, 20), // March 20, 2024
@@ -120,7 +126,7 @@ async function main() {
       },
       {
         amount: 250.00,
-        type: 'INCOME',
+        type: 'income',
         category: 'Income',
         description: 'Freelance work',
         date: new Date(2024, 2, 25), // March 25, 2024
@@ -130,7 +136,7 @@ async function main() {
       // April transactions
       {
         amount: 3500,
-        type: 'INCOME',
+        type: 'income',
         category: 'Income',
         description: 'Monthly Salary',
         date: new Date(2024, 3, 1), // April 1, 2024
@@ -138,8 +144,8 @@ async function main() {
         accountId: createdAccounts[0].id, // Checking account
       },
       {
-        amount: -92.17,
-        type: 'EXPENSE',
+        amount: 92.17,
+        type: 'expense',
         category: 'Food & Dining',
         description: 'Grocery shopping',
         date: new Date(2024, 3, 5), // April 5, 2024
@@ -147,8 +153,8 @@ async function main() {
         accountId: createdAccounts[0].id, // Checking account
       },
       {
-        amount: -45.99,
-        type: 'EXPENSE',
+        amount: 45.99,
+        type: 'expense',
         category: 'Entertainment',
         description: 'Netflix subscription',
         date: new Date(2024, 3, 10), // April 10, 2024
@@ -156,8 +162,8 @@ async function main() {
         accountId: createdAccounts[2].id, // Credit card
       },
       {
-        amount: -130.00,
-        type: 'EXPENSE',
+        amount: 130.00,
+        type: 'expense',
         category: 'Bills & Utilities',
         description: 'Electricity bill',
         date: new Date(2024, 3, 15), // April 15, 2024
@@ -165,8 +171,8 @@ async function main() {
         accountId: createdAccounts[0].id, // Checking account
       },
       {
-        amount: -35.75,
-        type: 'EXPENSE',
+        amount: 35.75,
+        type: 'expense',
         category: 'Transportation',
         description: 'Gas',
         date: new Date(2024, 3, 20), // April 20, 2024
@@ -175,7 +181,7 @@ async function main() {
       },
       {
         amount: 300.00,
-        type: 'INCOME',
+        type: 'income',
         category: 'Income',
         description: 'Freelance work',
         date: new Date(2024, 3, 25), // April 25, 2024
@@ -189,10 +195,13 @@ async function main() {
       where: { userId: user.id },
     });
 
-    // Add new transactions
+    // Add new transactions with standardized formatting
     for (const transaction of transactionData) {
+      // Standardize the transaction data
+      const standardizedTransaction = standardizeTransaction(transaction);
+      
       await prisma.transaction.create({
-        data: transaction,
+        data: standardizedTransaction,
       });
     }
 
@@ -201,26 +210,26 @@ async function main() {
     // Create budgets
     const budgetData = [
       {
-        category: 'Food & Dining',
-        amount: 500,
+        category: formatCategory('Food & Dining'),
+        amount: formatAmount(500),
         period: 'monthly',
         userId: user.id,
       },
       {
-        category: 'Entertainment',
-        amount: 200,
+        category: formatCategory('Entertainment'),
+        amount: formatAmount(200),
         period: 'monthly',
         userId: user.id,
       },
       {
-        category: 'Bills & Utilities',
-        amount: 300,
+        category: formatCategory('Bills & Utilities'),
+        amount: formatAmount(300),
         period: 'monthly',
         userId: user.id,
       },
       {
-        category: 'Transportation',
-        amount: 150,
+        category: formatCategory('Transportation'),
+        amount: formatAmount(150),
         period: 'monthly',
         userId: user.id,
       },
