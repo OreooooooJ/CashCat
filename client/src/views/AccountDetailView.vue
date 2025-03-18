@@ -3,7 +3,7 @@
     <div class="page-header">
       <button class="back-btn" @click="goBack">
         <ArrowLeftIcon class="w-5 h-5 mr-2" />
-        Back to Accounts
+        Back to Bank Accounts
       </button>
       
       <div class="account-actions">
@@ -20,7 +20,7 @@
 
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Loading account details...</p>
+      <p>Loading bank account details...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
@@ -28,7 +28,7 @@
       <p>{{ error }}</p>
       <button class="back-btn" @click="goBack">
         <ArrowLeftIcon class="w-5 h-5 mr-2" />
-        Back to Accounts
+        Back to Bank Accounts
       </button>
     </div>
 
@@ -66,8 +66,16 @@
           <p>Loading transactions...</p>
         </div>
 
+        <div v-else-if="transactionError" class="empty-transactions">
+          <ExclamationCircleIcon class="w-8 h-8 text-red-500 mb-2" />
+          <p>{{ transactionError }}</p>
+          <button class="retry-btn mt-2" @click="fetchAccountTransactions">
+            Retry Loading Transactions
+          </button>
+        </div>
+
         <div v-else-if="transactions.length === 0" class="empty-transactions">
-          <p>No transactions found for this account.</p>
+          <p>No transactions found for this bank account.</p>
           <router-link to="/transactions" class="add-transaction-btn">
             <PlusIcon class="w-5 h-5 mr-2" />
             Add Transaction
@@ -129,9 +137,10 @@
           <div class="form-group">
             <label for="account-type">Account Type</label>
             <select id="account-type" v-model="editedAccount.type" required>
-              <option value="debit">Cash/Debit</option>
+              <option value="checking">Checking Account</option>
+              <option value="savings">Savings Account</option>
               <option value="credit">Credit Card</option>
-              <option value="investment">Investment</option>
+              <option value="investment">Investment Account</option>
             </select>
           </div>
           
@@ -265,6 +274,7 @@ const error = computed(() => accountStore.error);
 
 const transactions = ref<Transaction[]>([]);
 const isLoadingTransactions = ref(false);
+const transactionError = ref<string | null>(null);
 const transactionFilter = ref('all');
 
 const showEditModal = ref(false);
@@ -288,7 +298,7 @@ const accountColors = [
 // Define a local interface for the edited account
 interface EditedAccount {
   name: string;
-  type: 'debit' | 'credit' | 'investment';
+  type: 'checking' | 'savings' | 'credit' | 'investment';
   balance: string | number;
   institution?: string;
   lastFour?: string;
@@ -297,7 +307,7 @@ interface EditedAccount {
 
 const editedAccount = ref<EditedAccount>({
   name: '',
-  type: 'debit',
+  type: 'checking',
   balance: '',
   institution: '',
   lastFour: '',
@@ -309,12 +319,21 @@ watch(account, (newAccount) => {
   if (newAccount) {
     editedAccount.value = {
       name: newAccount.name,
-      type: newAccount.type,
+      type: newAccount.type as 'checking' | 'savings' | 'credit' | 'investment',
       balance: currency(newAccount.balance, { symbol: '' }).format(),
       institution: newAccount.institution || '',
       lastFour: newAccount.lastFour || '',
       color: newAccount.color || accountColors[0]
     };
+  }
+}, { immediate: true });
+
+// Update document title when account is loaded
+watch(account, (newAccount) => {
+  if (newAccount) {
+    document.title = `${newAccount.name} | CashCat`;
+  } else {
+    document.title = 'Bank Account Detail | CashCat';
   }
 }, { immediate: true });
 
@@ -333,7 +352,18 @@ const formatCurrency = (amount: number) => {
 };
 
 const formatAccountType = (type: string) => {
-  return type === 'debit' ? 'Cash/Debit Account' : type === 'credit' ? 'Credit Card' : 'Investment';
+  switch (type) {
+    case 'checking':
+      return 'Checking Account';
+    case 'savings':
+      return 'Savings Account';
+    case 'credit':
+      return 'Credit Card';
+    case 'investment':
+      return 'Investment Account';
+    default:
+      return type.charAt(0).toUpperCase() + type.slice(1);
+  }
 };
 
 const formatDate = (date: Date) => {
@@ -366,6 +396,8 @@ const fetchAccountTransactions = async () => {
   if (!accountId.value) return;
   
   isLoadingTransactions.value = true;
+  transactionError.value = null;
+  
   try {
     const data = await accountStore.getAccountTransactions(accountId.value);
     
@@ -383,6 +415,7 @@ const fetchAccountTransactions = async () => {
     });
   } catch (err) {
     console.error('Error fetching account transactions:', err);
+    transactionError.value = 'Failed to load transactions. Please try again.';
   } finally {
     isLoadingTransactions.value = false;
   }
@@ -409,7 +442,7 @@ const submitEditAccount = async () => {
     
     await accountStore.updateAccount(accountId.value, {
       name: editedAccount.value.name,
-      type: editedAccount.value.type as 'debit' | 'credit' | 'investment',
+      type: editedAccount.value.type as 'checking' | 'savings' | 'credit' | 'investment',
       balance: adjustedBalance,
       institution: editedAccount.value.institution || undefined,
       lastFour: editedAccount.value.lastFour || undefined,

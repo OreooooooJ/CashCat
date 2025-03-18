@@ -8,4 +8,4 @@ alwaysApply: true
 
 - use yarn whenever possible
 - Always execute `codebase_search` in `/Users/easonj/CursorProject/CashCat` **before** creating or modifying any files. If no relevant results are found, verify manually before proceeding.
-- please don't restart the dev server, as most of time it is already running. You can check the status before restart the dev server. 
+- please don't restart the servers, as most of time it is already running. Do refreshment on the broswer in debugger mode and check the logs, etc. 

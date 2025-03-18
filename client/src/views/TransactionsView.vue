@@ -4,15 +4,15 @@
       <h1>Transactions</h1>
       <div class="transactions-actions">
         <button 
-          @click="showCsvImportModal = true" 
-          class="btn-secondary flex items-center"
+          class="btn-secondary flex items-center" 
+          @click="showCsvImportModal = true"
         >
           <ReceiptRefundIcon class="h-5 w-5 mr-1" />
           Import CSV
         </button>
         <button 
-          @click="showAddTransactionModal = true" 
-          class="btn-primary flex items-center"
+          class="btn-primary flex items-center" 
+          @click="showAddTransactionModal = true"
         >
           <PlusIcon class="h-5 w-5 mr-1" />
           Add Transaction

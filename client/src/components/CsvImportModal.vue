@@ -10,7 +10,7 @@
       <p>{{ success }}</p>
     </div>
     
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+    <form class="space-y-4" @submit.prevent="handleSubmit">
       <!-- Account Selection -->
       <div>
         <label for="account" class="block text-sm font-medium text-gray-700">Account</label>
@@ -44,8 +44,8 @@
                   type="file" 
                   class="sr-only" 
                   accept=".csv"
-                  @change="handleFileChange"
                   required
+                  @change="handleFileChange"
                 >
               </label>
               <p class="pl-1">or drag and drop</p>

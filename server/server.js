@@ -32,11 +32,13 @@ app.get('/debug/user', async (req, res) => {
 
 // Temporary authentication middleware
 const authenticateToken = (req, res, next) => {
-  // Set a default test user for development
+  // Set a default test user for development with the correct ID from the database
   req.user = {
-    id: "bbe33afd-2c48-4ccc-9c96-060fdfe6be2e",
+    id: "2e875360-dc75-43ea-a2d4-1a61b6a3bed2",
     email: "test@example.com"
   };
+  
+  console.log('Using hardcoded user ID:', req.user.id);
   
   // Continue to the next middleware/route handler
   next();
@@ -74,7 +76,7 @@ app.get('/api/transactions', authenticateToken, async (req, res) => {
   }
 });
 
-// Get all accounts for the authenticated user
+// Get all bank accounts for the authenticated user
 app.get('/api/accounts', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -88,10 +90,81 @@ app.get('/api/accounts', authenticateToken, async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     
-    res.json(accounts);
+    // Map legacy 'debit' type to 'checking' for client compatibility
+    const mappedAccounts = accounts.map(account => {
+      if (account.type === 'debit') {
+        return {
+          ...account,
+          type: 'checking'
+        };
+      }
+      return account;
+    });
+    
+    res.json(mappedAccounts);
   } catch (error) {
-    console.error('Error fetching accounts:', error);
-    res.status(500).json({ error: 'Failed to fetch accounts' });
+    console.error('Error fetching bank accounts:', error);
+    res.status(500).json({ error: 'Failed to fetch bank accounts' });
+  }
+});
+
+// Add a test endpoint to directly query the database
+app.get('/api/test/transactions', async (req, res) => {
+  try {
+    console.log('TEST ENDPOINT: Querying transactions directly');
+    
+    // Query all transactions
+    const transactions = await prisma.transaction.findMany({
+      take: 10
+    });
+    
+    console.log(`TEST ENDPOINT: Found ${transactions.length} transactions`);
+    
+    // Query transactions for the specific user ID from our test
+    const userTransactions = await prisma.transaction.findMany({
+      where: { userId: '2e875360-dc75-43ea-a2d4-1a61b6a3bed2' },
+      take: 10
+    });
+    
+    console.log(`TEST ENDPOINT: Found ${userTransactions.length} transactions for user 2e875360-dc75-43ea-a2d4-1a61b6a3bed2`);
+    
+    res.json({
+      allTransactions: transactions,
+      userTransactions: userTransactions
+    });
+  } catch (error) {
+    console.error('TEST ENDPOINT: Error querying transactions:', error);
+    res.status(500).json({ error: 'Failed to query transactions' });
+  }
+});
+
+// Add a test endpoint to directly query the database for accounts
+app.get('/api/test/accounts', async (req, res) => {
+  try {
+    console.log('TEST ENDPOINT: Querying accounts directly');
+    
+    // Query all accounts
+    const accounts = await prisma.account.findMany({
+      take: 10
+    });
+    
+    console.log(`TEST ENDPOINT: Found ${accounts.length} accounts`);
+    
+    // Query accounts for the specific user ID from our test
+    const userAccounts = await prisma.account.findMany({
+      where: { userId: '2e875360-dc75-43ea-a2d4-1a61b6a3bed2' },
+      take: 10
+    });
+    
+    console.log(`TEST ENDPOINT: Found ${userAccounts.length} accounts for user 2e875360-dc75-43ea-a2d4-1a61b6a3bed2`);
+    
+    res.json({
+      allAccounts: accounts,
+      userAccounts: userAccounts
+    });
+  } catch (error) {
+    console.error('TEST ENDPOINT: Error querying accounts:', error);
+    res.status(500).json({ error: 'Failed to query accounts' });
   }
 });
 

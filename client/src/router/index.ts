@@ -41,7 +41,7 @@ const router = createRouter({
         },
         {
           path: '/accounts/:id',
-          name: 'account-detail',
+          name: 'bank-account-detail',
           component: () => import('@/views/AccountDetailView.vue')
         },
         {
