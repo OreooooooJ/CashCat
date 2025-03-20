@@ -129,8 +129,8 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
 
   // Get the current date from the system
   const now = new Date();
-  const targetYear = now.getFullYear(); // Use system year (2025)
-  const targetMonth = now.getMonth(); // Use system month (2 for March, 0-indexed)
+  const targetYear = now.getFullYear();
+  const targetMonth = now.getMonth(); // 0-indexed
   
   // Filter transactions by period
   const filteredTransactions = transactions.filter(transaction => {
@@ -138,7 +138,15 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
       return false;
     }
     
-    const transactionDate = new Date(transaction.date);
+    // Ensure transaction.date is a Date object
+    let transactionDate: Date;
+    if (transaction.date instanceof Date) {
+      transactionDate = transaction.date;
+    } else {
+      // Handle the case where date might be a string or other format
+      transactionDate = new Date(transaction.date);
+    }
+    
     const transactionMonth = transactionDate.getMonth();
     const transactionYear = transactionDate.getFullYear();
     
@@ -268,6 +276,7 @@ const getHistoricalData = () => {
     // This ensures we don't show future months with no data
     const monthsToShow = Math.min(6, currentMonth + 1);
     
+    // Changed: Now processing months in chronological order (oldest to newest)
     for (let i = monthsToShow - 1; i >= 0; i--) {
       const m = currentMonth - i;
       const year = currentYear - (m < 0 ? 1 : 0);
@@ -275,7 +284,9 @@ const getHistoricalData = () => {
       
       // Only include months up to the current month
       const label = `${months[month]}${year !== currentYear ? ' ' + year : ''}`;
-      labels.unshift(label);
+      
+      // Using push to maintain chronological order
+      labels.push(label);
       
       // Filter transactions for this month/year
       const filteredTransactions = transactionStore.transactions.filter(t => {
@@ -296,9 +307,10 @@ const getHistoricalData = () => {
         }
       });
       
-      incomeData.unshift(parseFloat(income.toFixed(2)));
-      expenseData.unshift(parseFloat(expense.toFixed(2)));
-      netData.unshift(parseFloat((income - expense).toFixed(2)));
+      // Using push to maintain chronological order
+      incomeData.push(parseFloat(income.toFixed(2)));
+      expenseData.push(parseFloat(expense.toFixed(2)));
+      netData.push(parseFloat((income - expense).toFixed(2)));
       transactionsByPeriod[label] = filteredTransactions;
     }
   } else {
@@ -340,62 +352,6 @@ const getHistoricalData = () => {
       expenseData.push(parseFloat(expense.toFixed(2)));
       netData.push(parseFloat((income - expense).toFixed(2)));
       transactionsByPeriod[quarterLabel] = filteredTransactions;
-    }
-    
-    // Add previous year's quarters for comparison (if data exists)
-    const previousYear = currentYear - 1;
-    const quartersToShow = [];
-    
-    // Check which quarters from previous year have data
-    for (let q = 0; q < 4; q++) {
-      const hasData = transactionStore.transactions.some(t => {
-        const date = new Date(t.date);
-        const month = date.getMonth();
-        return date.getFullYear() === previousYear && 
-               month >= q * 3 && 
-               month < (q + 1) * 3;
-      });
-      
-      if (hasData) {
-        quartersToShow.push(q);
-      }
-    }
-    
-    // Only include previous year's data if it exists
-    if (quartersToShow.length > 0) {
-      // Insert previous year's data at the beginning
-      for (let i = 0; i < quartersToShow.length; i++) {
-        const q = quartersToShow[i];
-        const quarterLabel = `${quarters[q]} ${previousYear}`;
-        labels.unshift(quarterLabel);
-        
-        // Filter transactions for this quarter
-        const filteredTransactions = transactionStore.transactions.filter(t => {
-          const date = new Date(t.date);
-          const month = date.getMonth();
-          return date.getFullYear() === previousYear && 
-                 month >= q * 3 && 
-                 month < (q + 1) * 3;
-        });
-        
-        // Process transactions
-        let income = 0;
-        let expense = 0;
-        
-        filteredTransactions.forEach(t => {
-          const type = t.type?.toLowerCase();
-          if (type === 'income') {
-            income += t.amount;
-          } else if (type === 'expense') {
-            expense += t.amount;
-          }
-        });
-        
-        incomeData.unshift(parseFloat(income.toFixed(2)));
-        expenseData.unshift(parseFloat(expense.toFixed(2)));
-        netData.unshift(parseFloat((income - expense).toFixed(2)));
-        transactionsByPeriod[quarterLabel] = filteredTransactions;
-      }
     }
   }
   

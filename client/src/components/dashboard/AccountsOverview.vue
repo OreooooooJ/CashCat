@@ -7,16 +7,6 @@
         <span>Add</span>
       </button>
     </div>
-    
-    <div class="debug-info">
-      <p>Total accounts: {{ accounts.length }}</p>
-      <p>Debit accounts: {{ debitAccounts.length }}</p>
-      <p>Credit accounts: {{ creditAccounts.length }}</p>
-      <p>Account types: {{ accounts.map(a => a.type).join(', ') }}</p>
-      <div v-for="(account, index) in accounts" :key="account.id" class="account-debug">
-        <p>Account {{ index + 1 }}: {{ account.name }} ({{ account.type }}) - ${{ account.balance }}</p>
-      </div>
-    </div>
 
     <div v-if="accounts.length === 0" class="no-accounts">
       <p>You don't have any bank accounts yet.</p>
