@@ -22,6 +22,10 @@
       </div>
     </div>
 
+    <div v-if="timePeriod === 'monthly'" class="selected-period">
+      {{ getMonthName(displayedMonth) }} {{ displayedYear }}
+    </div>
+
     <div class="cash-flow-summary">
       <div class="cash-flow-card income">
         <span class="label">Income</span>
@@ -116,6 +120,17 @@ const chartOptions = [
   { label: 'Bar Chart', value: 'bar' }
 ]
 
+// Track displayed month/year for monthly view
+const displayedMonth = ref<number>(0);
+const displayedYear = ref<number>(new Date().getFullYear());
+
+// Function to get month name from month index
+const getMonthName = (monthIndex: number) => {
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+  return months[monthIndex];
+}
+
 // Helper function to group transactions by period
 const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod = false) => {
   const result = {
@@ -131,6 +146,39 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
   const now = new Date();
   const targetYear = now.getFullYear();
   const targetMonth = now.getMonth(); // 0-indexed
+  
+  // For monthly view, find the most recent month with transactions
+  // if no transactions exist for the current month
+  let mostRecentMonth = targetMonth;
+  let mostRecentYear = targetYear;
+  
+  if (timePeriod.value === 'monthly') {
+    // Sort transactions by date (newest first)
+    const sortedTransactions = [...transactions].sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
+    });
+    
+    // Get the most recent transaction date
+    if (sortedTransactions.length > 0) {
+      const latestTransaction = sortedTransactions[0];
+      const latestDate = latestTransaction.date instanceof Date 
+        ? latestTransaction.date 
+        : new Date(latestTransaction.date);
+      
+      // If the most recent transaction is from a previous month/year, use that
+      // instead of the current month which may have no data
+      mostRecentMonth = latestDate.getMonth();
+      mostRecentYear = latestDate.getFullYear();
+      
+      // Update the displayed month/year when calculating for current period (not previous)
+      if (!isPreviousPeriod) {
+        displayedMonth.value = mostRecentMonth;
+        displayedYear.value = mostRecentYear;
+      }
+    }
+  }
   
   // Filter transactions by period
   const filteredTransactions = transactions.filter(transaction => {
@@ -154,13 +202,13 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
     
     if (timePeriod.value === 'monthly') {
       if (isPreviousPeriod) {
-        // Previous month (calculate from current date)
-        const prevMonth = targetMonth === 0 ? 11 : targetMonth - 1;
-        const prevYear = targetMonth === 0 ? targetYear - 1 : targetYear;
+        // Previous month relative to most recent month with data
+        const prevMonth = mostRecentMonth === 0 ? 11 : mostRecentMonth - 1;
+        const prevYear = mostRecentMonth === 0 ? mostRecentYear - 1 : mostRecentYear;
         include = transactionMonth === prevMonth && transactionYear === prevYear;
       } else {
-        // Current month
-        include = transactionMonth === targetMonth && transactionYear === targetYear;
+        // Use the most recent month with data
+        include = transactionMonth === mostRecentMonth && transactionYear === mostRecentYear;
       }
     } else {
       // For yearly view
@@ -612,7 +660,15 @@ const getStyleForTrend = (value: number) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.selected-period {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  text-align: right;
+  font-style: italic;
 }
 
 h3 {
