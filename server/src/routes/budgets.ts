@@ -47,7 +47,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
-    const { amount, spent } = req.body;
+    const { amount, spent, period } = req.body;
     
     const budget = await prisma.budget.findUnique({
       where: { id },
@@ -61,12 +61,15 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
+    const updateData: any = {};
+    
+    if (amount !== undefined) updateData.amount = parseFloat(amount);
+    if (spent !== undefined) updateData.spent = parseFloat(spent);
+    if (period !== undefined) updateData.period = period;
+    
     const updatedBudget = await prisma.budget.update({
       where: { id },
-      data: {
-        amount: amount ? parseFloat(amount) : undefined,
-        spent: spent ? parseFloat(spent) : undefined,
-      },
+      data: updateData,
     });
     
     res.json(updatedBudget);
