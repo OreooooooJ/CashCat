@@ -34,18 +34,31 @@ export const useTransactionStore = defineStore('transaction', () => {
       console.log('Response status:', response.status);
       
       // Map server transactions to client format
-      transactions.value = response.data.map((t: ServerTransaction) => ({
-        id: t.id,
-        amount: t.amount,
-        type: t.type,
-        category: t.category,
-        description: t.description || '',
-        date: new Date(t.date),
-        userId: t.userId,
-        accountId: t.accountId,
-        createdAt: new Date(t.createdAt),
-        updatedAt: new Date(t.updatedAt)
-      }));
+      transactions.value = response.data.map((t: ServerTransaction) => {
+        // Ensure date is a proper Date object
+        let date: Date;
+        try {
+          // Try to convert the date string to a Date object
+          date = new Date(t.date);
+        } catch (e) {
+          console.error('Error converting date', t.date, e);
+          // Fallback to current date if conversion fails
+          date = new Date();
+        }
+        
+        return {
+          id: t.id,
+          amount: t.amount,
+          type: t.type,
+          category: t.category,
+          description: t.description || '',
+          date: date,
+          userId: t.userId,
+          accountId: t.accountId,
+          createdAt: new Date(t.createdAt),
+          updatedAt: new Date(t.updatedAt)
+        };
+      });
     } catch (err) {
       console.error('Error fetching transactions:', err);
       error.value = 'Failed to load transactions';

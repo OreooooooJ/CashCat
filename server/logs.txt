@@ -1,0 +1,196 @@
+Starting server logs
+[2025-03-20T02:50:24.163Z] LOG: Server is running on port 8000
+[2025-03-20T02:50:32.604Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:50:32.604Z] LOG: 🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+[2025-03-20T02:50:32.604Z] LOG: 🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+[2025-03-20T02:50:32.604Z] LOG: 🔍 CSV SERVICE: Returning formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-20T02:50:32.605Z] LOG: 🔍 DIRECT ENDPOINT: Supported formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-20T02:50:39.048Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:50:39.051Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:50:40.174Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:50:40.175Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:50:41.522Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:00.694Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:01.242Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:01.702Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:03.013Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:03.014Z] LOG: 🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+[2025-03-20T02:51:03.014Z] LOG: 🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+[2025-03-20T02:51:03.014Z] LOG: 🔍 CSV SERVICE: Returning formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-20T02:51:03.014Z] LOG: 🔍 DIRECT ENDPOINT: Supported formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-20T02:51:05.763Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:05.764Z] LOG: 🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+[2025-03-20T02:51:05.766Z] LOG: 🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+[2025-03-20T02:51:05.766Z] LOG: 🔍 CSV SERVICE: Returning formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-20T02:51:05.766Z] LOG: 🔍 DIRECT ENDPOINT: Supported formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-20T02:51:12.665Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:13.124Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:51.229Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:53.154Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:51:53.615Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:12.922Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:13.460Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:21.595Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:22.056Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:24.904Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:25.907Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:26.368Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:26.917Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:27.465Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:29.016Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:29.477Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:45.812Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:45.812Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:46.645Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:58.388Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:58.389Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:54:59.092Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:55:06.474Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:55:06.475Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:55:07.271Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:55:14.896Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:55:15.353Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:56:31.805Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:56:31.806Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T02:56:33.188Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T13:34:39.498Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T13:34:39.501Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T13:34:40.915Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T13:34:47.802Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T13:34:47.802Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T13:34:48.492Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T21:50:39.911Z] LOG: Server is running on port 8000
+[2025-03-20T21:50:51.885Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T21:50:51.888Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-20T21:50:53.647Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:18:03.905Z] LOG: Server is running on port 8000
+[2025-03-21T01:18:08.677Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:18:08.705Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:18:10.609Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:18:20.388Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:18:25.148Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:18:25.681Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:21:52.969Z] LOG: Server is running on port 8000
+[2025-03-21T01:21:56.787Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:22:38.846Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:22:38.850Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:22:38.851Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:22:40.477Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:26:08.994Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:26:19.936Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:26:19.939Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:26:19.940Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:26:21.472Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:07.638Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:09.786Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:09.789Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:10.219Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:10.516Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:11.716Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:15.230Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:15.231Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:15.654Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:27:45.605Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:28:16.133Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:28:32.919Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:28:38.952Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:29:14.805Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:29:31.856Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:29:31.858Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:29:31.864Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:29:33.429Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:29:43.575Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:30:11.960Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:34:20.738Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:35:10.867Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:35:21.078Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:35:40.264Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:37:12.406Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:37:24.510Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:38:07.792Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:42:50.041Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:32.333Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:32.341Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:32.343Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:32.374Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:33.946Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:40.078Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:44.959Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:49.223Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:49.224Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:49.224Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:50.797Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:50.828Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:43:56.387Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:02.169Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:06.053Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:06.054Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:06.058Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:07.661Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:07.749Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:20.898Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:27.390Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:34.190Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:37.252Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:37.272Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:37.273Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:38.883Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:51.250Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:51.252Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:51.253Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:44:52.910Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:03.683Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:10.334Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:10.769Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:16.886Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:16.887Z] LOG: 🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+[2025-03-21T01:49:16.887Z] LOG: 🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+[2025-03-21T01:49:16.887Z] LOG: 🔍 CSV SERVICE: Returning formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-21T01:49:16.888Z] LOG: 🔍 DIRECT ENDPOINT: Supported formats: [
+  "Chase",
+  "Bank of America",
+  "Wells Fargo"
+]
+[2025-03-21T01:49:21.897Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:21.897Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:22.839Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:49:30.599Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:50:00.121Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:50:32.753Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:50:32.754Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:50:32.754Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:50:34.361Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:50:34.810Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:55:47.055Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:55:47.056Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:55:47.056Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:55:49.313Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+[2025-03-21T01:55:49.754Z] LOG: Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2

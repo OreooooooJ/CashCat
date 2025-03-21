@@ -18,8 +18,11 @@
     "seed:staging": "node --loader ts-node/esm src/scripts/seedStagingTransactions.ts",
     "seed:march": "node --loader ts-node/esm src/scripts/seedMarchTransactions.ts",
     "seed:transactions:csv": "node --loader ts-node/esm scripts/reseedTransactionsFromCsv.ts",
+    "test:csv-parser": "node --loader ts-node/esm scripts/testCsvParser.ts",
+    "test:csv-staging": "node --loader ts-node/esm scripts/testCsvToStagingService.ts",
     "db:migrate": "node --loader ts-node/esm src/scripts/applyMigration.ts",
-    "analyze:categories": "node --loader ts-node/esm src/scripts/analyzeCategoryChanges.ts"
+    "analyze:categories": "node --loader ts-node/esm src/scripts/analyzeCategoryChanges.ts",
+    "setup:chase": "node --loader ts-node/esm scripts/setupChaseCheckingAccounts.ts"
   },
   "keywords": [],
   "author": "",

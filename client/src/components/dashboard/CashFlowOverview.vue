@@ -22,6 +22,10 @@
       </div>
     </div>
 
+    <div v-if="timePeriod === 'monthly'" class="selected-period">
+      {{ getMonthName(displayedMonth) }} {{ displayedYear }}
+    </div>
+
     <div class="cash-flow-summary">
       <div class="cash-flow-card income">
         <span class="label">Income</span>
@@ -116,6 +120,17 @@ const chartOptions = [
   { label: 'Bar Chart', value: 'bar' }
 ]
 
+// Track displayed month/year for monthly view
+const displayedMonth = ref<number>(0);
+const displayedYear = ref<number>(new Date().getFullYear());
+
+// Function to get month name from month index
+const getMonthName = (monthIndex: number) => {
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+  return months[monthIndex];
+}
+
 // Helper function to group transactions by period
 const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod = false) => {
   const result = {
@@ -129,8 +144,41 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
 
   // Get the current date from the system
   const now = new Date();
-  const targetYear = now.getFullYear(); // Use system year (2025)
-  const targetMonth = now.getMonth(); // Use system month (2 for March, 0-indexed)
+  const targetYear = now.getFullYear();
+  const targetMonth = now.getMonth(); // 0-indexed
+  
+  // For monthly view, find the most recent month with transactions
+  // if no transactions exist for the current month
+  let mostRecentMonth = targetMonth;
+  let mostRecentYear = targetYear;
+  
+  if (timePeriod.value === 'monthly') {
+    // Sort transactions by date (newest first)
+    const sortedTransactions = [...transactions].sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
+    });
+    
+    // Get the most recent transaction date
+    if (sortedTransactions.length > 0) {
+      const latestTransaction = sortedTransactions[0];
+      const latestDate = latestTransaction.date instanceof Date 
+        ? latestTransaction.date 
+        : new Date(latestTransaction.date);
+      
+      // If the most recent transaction is from a previous month/year, use that
+      // instead of the current month which may have no data
+      mostRecentMonth = latestDate.getMonth();
+      mostRecentYear = latestDate.getFullYear();
+      
+      // Update the displayed month/year when calculating for current period (not previous)
+      if (!isPreviousPeriod) {
+        displayedMonth.value = mostRecentMonth;
+        displayedYear.value = mostRecentYear;
+      }
+    }
+  }
   
   // Filter transactions by period
   const filteredTransactions = transactions.filter(transaction => {
@@ -138,7 +186,15 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
       return false;
     }
     
-    const transactionDate = new Date(transaction.date);
+    // Ensure transaction.date is a Date object
+    let transactionDate: Date;
+    if (transaction.date instanceof Date) {
+      transactionDate = transaction.date;
+    } else {
+      // Handle the case where date might be a string or other format
+      transactionDate = new Date(transaction.date);
+    }
+    
     const transactionMonth = transactionDate.getMonth();
     const transactionYear = transactionDate.getFullYear();
     
@@ -146,13 +202,13 @@ const groupTransactionsByPeriod = (transactions: Transaction[], isPreviousPeriod
     
     if (timePeriod.value === 'monthly') {
       if (isPreviousPeriod) {
-        // Previous month (calculate from current date)
-        const prevMonth = targetMonth === 0 ? 11 : targetMonth - 1;
-        const prevYear = targetMonth === 0 ? targetYear - 1 : targetYear;
+        // Previous month relative to most recent month with data
+        const prevMonth = mostRecentMonth === 0 ? 11 : mostRecentMonth - 1;
+        const prevYear = mostRecentMonth === 0 ? mostRecentYear - 1 : mostRecentYear;
         include = transactionMonth === prevMonth && transactionYear === prevYear;
       } else {
-        // Current month
-        include = transactionMonth === targetMonth && transactionYear === targetYear;
+        // Use the most recent month with data
+        include = transactionMonth === mostRecentMonth && transactionYear === mostRecentYear;
       }
     } else {
       // For yearly view
@@ -268,6 +324,7 @@ const getHistoricalData = () => {
     // This ensures we don't show future months with no data
     const monthsToShow = Math.min(6, currentMonth + 1);
     
+    // Changed: Now processing months in chronological order (oldest to newest)
     for (let i = monthsToShow - 1; i >= 0; i--) {
       const m = currentMonth - i;
       const year = currentYear - (m < 0 ? 1 : 0);
@@ -275,7 +332,9 @@ const getHistoricalData = () => {
       
       // Only include months up to the current month
       const label = `${months[month]}${year !== currentYear ? ' ' + year : ''}`;
-      labels.unshift(label);
+      
+      // Using push to maintain chronological order
+      labels.push(label);
       
       // Filter transactions for this month/year
       const filteredTransactions = transactionStore.transactions.filter(t => {
@@ -296,9 +355,10 @@ const getHistoricalData = () => {
         }
       });
       
-      incomeData.unshift(parseFloat(income.toFixed(2)));
-      expenseData.unshift(parseFloat(expense.toFixed(2)));
-      netData.unshift(parseFloat((income - expense).toFixed(2)));
+      // Using push to maintain chronological order
+      incomeData.push(parseFloat(income.toFixed(2)));
+      expenseData.push(parseFloat(expense.toFixed(2)));
+      netData.push(parseFloat((income - expense).toFixed(2)));
       transactionsByPeriod[label] = filteredTransactions;
     }
   } else {
@@ -340,62 +400,6 @@ const getHistoricalData = () => {
       expenseData.push(parseFloat(expense.toFixed(2)));
       netData.push(parseFloat((income - expense).toFixed(2)));
       transactionsByPeriod[quarterLabel] = filteredTransactions;
-    }
-    
-    // Add previous year's quarters for comparison (if data exists)
-    const previousYear = currentYear - 1;
-    const quartersToShow = [];
-    
-    // Check which quarters from previous year have data
-    for (let q = 0; q < 4; q++) {
-      const hasData = transactionStore.transactions.some(t => {
-        const date = new Date(t.date);
-        const month = date.getMonth();
-        return date.getFullYear() === previousYear && 
-               month >= q * 3 && 
-               month < (q + 1) * 3;
-      });
-      
-      if (hasData) {
-        quartersToShow.push(q);
-      }
-    }
-    
-    // Only include previous year's data if it exists
-    if (quartersToShow.length > 0) {
-      // Insert previous year's data at the beginning
-      for (let i = 0; i < quartersToShow.length; i++) {
-        const q = quartersToShow[i];
-        const quarterLabel = `${quarters[q]} ${previousYear}`;
-        labels.unshift(quarterLabel);
-        
-        // Filter transactions for this quarter
-        const filteredTransactions = transactionStore.transactions.filter(t => {
-          const date = new Date(t.date);
-          const month = date.getMonth();
-          return date.getFullYear() === previousYear && 
-                 month >= q * 3 && 
-                 month < (q + 1) * 3;
-        });
-        
-        // Process transactions
-        let income = 0;
-        let expense = 0;
-        
-        filteredTransactions.forEach(t => {
-          const type = t.type?.toLowerCase();
-          if (type === 'income') {
-            income += t.amount;
-          } else if (type === 'expense') {
-            expense += t.amount;
-          }
-        });
-        
-        incomeData.unshift(parseFloat(income.toFixed(2)));
-        expenseData.unshift(parseFloat(expense.toFixed(2)));
-        netData.unshift(parseFloat((income - expense).toFixed(2)));
-        transactionsByPeriod[quarterLabel] = filteredTransactions;
-      }
     }
   }
   
@@ -656,7 +660,15 @@ const getStyleForTrend = (value: number) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.selected-period {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  text-align: right;
+  font-style: italic;
 }
 
 h3 {

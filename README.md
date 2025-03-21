@@ -211,6 +211,26 @@ The script will:
 - Format transaction data consistently
 - Insert transactions into the database
 
+### Testing CSV Processing
+
+To test CSV parsing without database connections:
+
+```bash
+cd server && yarn test:csv-parser
+```
+
+To test the full pre-processing pipeline that prepares transactions for staging:
+
+```bash
+cd server && yarn test:csv-staging
+```
+
+These test scripts will:
+- Process the CSV files in the `resources` directory
+- Show detailed transaction breakdowns by category and type
+- Display sample transactions with formatted data
+- Verify that amounts, dates, and categories are correctly processed
+
 ### CSV Format Support
 
 Currently supported CSV formats:
@@ -224,6 +244,14 @@ All CSV files should have the following columns:
 - `Account #`: Account number (masked)
 - `Amount`: Transaction amount (positive for income/expenses depending on account type)
 - `Category`: Transaction category (optional)
+
+### Staging Transaction Process
+
+The CSV import follows a two-step process:
+1. **Import to Staging**: CSV data is parsed and imported to a staging area where it can be reviewed
+2. **Process from Staging**: Approved transactions are moved from staging to the main transaction table
+
+This approach allows for data verification before final import and helps prevent duplicate transactions.
 
 ## Future Plans
 

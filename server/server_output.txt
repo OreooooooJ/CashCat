@@ -1,0 +1,60 @@
+Server is running on port 8000
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+🔍 CSV SERVICE: Returning formats: [ 'Chase', 'Bank of America', 'Wells Fargo' ]
+🔍 DIRECT ENDPOINT: Supported formats: [ 'Chase', 'Bank of America', 'Wells Fargo' ]
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+🔍 CSV SERVICE: Returning formats: [ 'Chase', 'Bank of America', 'Wells Fargo' ]
+🔍 DIRECT ENDPOINT: Supported formats: [ 'Chase', 'Bank of America', 'Wells Fargo' ]
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+🔍 DIRECT ENDPOINT: GET /api/transactions/import/formats - Request received
+🔍 CSV SERVICE: getSupportedFormats called directly in server.js
+🔍 CSV SERVICE: Returning formats: [ 'Chase', 'Bank of America', 'Wells Fargo' ]
+🔍 DIRECT ENDPOINT: Supported formats: [ 'Chase', 'Bank of America', 'Wells Fargo' ]
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2
+Using hardcoded user ID: 2e875360-dc75-43ea-a2d4-1a61b6a3bed2

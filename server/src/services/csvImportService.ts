@@ -372,5 +372,8 @@ export const importCsvTransactions = async (
  * @returns Array of supported bank format names
  */
 export const getSupportedFormats = (): string[] => {
-  return bankFormats.map(format => format.name);
+  console.log('🔍 CSV SERVICE: getSupportedFormats called');
+  const formats = bankFormats.map(format => format.name);
+  console.log('🔍 CSV SERVICE: Returning formats:', formats);
+  return formats;
 }; 
